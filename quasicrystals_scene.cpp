@@ -1,4 +1,5 @@
 #include "quasicrystals_scene.h"
+#include "quasicrystals_physical_window.h"
 
 namespace kipod::QuasiCrystals{
 
@@ -60,24 +61,18 @@ void QuasiCrystalsScene::SetupShaders()
 
 }
 
-void QuasiCrystalsScene::SetupUniforms(Camera* camera, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetupUniforms(Projection *projection, QuasiCrystal *quacry)
 {
 
-    SetUniformInternal(camera, quacry);
-    SetUniformPhysical(camera, quacry);
-    SetUniformPhysicalBox(camera, quacry);
+    SetUniformInternal(projection, quacry);
+    SetUniformPhysical(projection, quacry);
+    SetUniformPhysicalBox(projection, quacry);
 }
 
-void QuasiCrystalsScene::SetUniformInternal(QuasiCrystalsScene::Camera *camera, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetUniformInternal(Projection *projection, QuasiCrystal *quacry)
 {
-    auto data = quacry->lattice_data_;
+    auto data = quacry->lattice_data_.get();
 
-    //auto shape_transform = quacry->Shape::GetWorldTransform();
-    auto shape_transform_glm  = quacry->window_->TransformWorld();
-
-
-    auto transform = quacry->PointSet::GetWorldTransform();
-    auto transform_glm = MakeGLM(transform);
 
     vec4 colorw = {0.3f,0.3f,0.3f,1.0f}; // data.w_color_;
     auto colorw_glm = MakeGLM(colorw);
@@ -87,12 +82,12 @@ void QuasiCrystalsScene::SetUniformInternal(QuasiCrystalsScene::Camera *camera, 
 
     auto shader = shaders_["Quasi Internal"];
     shader->SetUniform<float>("depth", data->depth_);
-    shader->SetUniform<glm::mat4>("shape_transform", shape_transform_glm);
+    shader->SetUniform<glm::mat4>("shape_transform", quacry->window_->TransformWorld());
 
-    shader->SetUniform<glm::mat4>("pv",  *camera);
-    shader->SetUniform<glm::mat4>("transform", transform_glm);
-    //std::vector<glm::vec2> shape_vectors_glm = vec2vecToGLM(quacry->transformed_vertices_);
-    //shader->SetUniform< std::vector< glm::vec2 > >("shape", shape_vectors_glm, 8);
+    shader->SetUniform<glm::mat4>("pv",  *projection);
+    shader->SetUniform<glm::mat4>("transform", quacry->TransformWorld());
+    std::vector<glm::vec2> shape_vectors = vec2vecToGLM(quacry->window_->transformed_vertices_);
+    shader->SetUniform< std::vector< glm::vec2 > >("shape", shape_vectors, 8);
     GLuint shape = glGetUniformLocation(*shader, "shape");
     glUniform2fv(shape, 8, &quacry->window_->transformed_vertices_[0][0]);
 
@@ -104,17 +99,17 @@ void QuasiCrystalsScene::SetUniformInternal(QuasiCrystalsScene::Camera *camera, 
     shader->SetUniform<glm::vec4>("wColor", colorw_glm);
 }
 
-void QuasiCrystalsScene::SetUniformPhysical(QuasiCrystalsScene::Camera *camera, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, QuasiCrystal *quacry)
 {
-    auto data = quacry->lattice_data_;
+    auto data = quacry->lattice_data_.get();
 
     auto shader = shaders_["Quasi Physical"];
 
     GLuint shape = glGetUniformLocation(*shader, "shape");
     glUniform2fv(shape, 8, &quacry->window_->transformed_vertices_[0][0]);
 
-    shader->SetUniform<glm::mat4>("pv", *camera);
-    shader->SetUniform<glm::mat4>("transform", quacry->PointSet::GetWorldTransform());
+    shader->SetUniform<glm::mat4>("pv", *projection);
+    shader->SetUniform<glm::mat4>("transform", quacry->TransformWorld());
     shader->SetUniform<float>("point_size", data->point_size_);
     shader->SetUniform<float>("alpha", data->alpha_);
     shader->SetUniform<float>("zdecay", data->z_decay_);
@@ -123,7 +118,7 @@ void QuasiCrystalsScene::SetUniformPhysical(QuasiCrystalsScene::Camera *camera, 
     shader->SetUniform<glm::vec4>("wColor", data->w_color_);
 }
 
-void QuasiCrystalsScene::SetUniformPhysicalBox(QuasiCrystalsScene::Camera *camera, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetUniformPhysicalBox(Projection *projection, QuasiCrystal *quacry)
 {
 //    auto data = quacry->lattice_data_;
 //    auto window_size = quacry->window_size_;
@@ -154,19 +149,61 @@ void QuasiCrystalsScene::Receive(std::shared_ptr<Event> event)
 
 }
 
+
 void QuasiCrystalsScene::Setup()
 {
+    name_ = "Quasi Crystals";
+    SetupShaders();
 
+    PhysicalWindow pw;
+    projections_.emplace_back(std::make_unique<Projection>(
+                                  pw.Left(),
+                                  pw.Right(),
+                                  pw.Bottom(),
+                                  pw.Top(),
+                                  pw.Near(),
+                                  pw.Far()));
+    ActiveProjection(projections_.back().get());
+
+    LOG_INFO("Quasi Crystals Scene Initialized.");
+    LOG_CONSOLE("Quasi Crystals Scene Initialized.");
 }
 
 void QuasiCrystalsScene::Draw()
 {
+    framebuffer_->Bind();
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    for(auto& quacry : quacries_){
+        glEnable( GL_BLEND );
+
+        shaders_["Quasi Physical"]->Use();
+        SetUniformPhysical(ActiveProjection(), quacry.get());
+        quacry->Draw();
+
+        glEnable(GL_DEPTH_TEST);
+
+        shaders_["Shape"]->Use();
+        SetUniformWindow(quacry->window_.get());
+        quacry->window_->Draw();
+
+        shaders_["Quasi Internal"]->Use();
+        SetUniformInternal(ActiveProjection(), quacry.get());
+        quacry->Draw();
+
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_BLEND);
+    }
+
+    kipod::RenderManager::Bind(0);
 }
 
-void QuasiCrystalsScene::AddQuasiCrystal(QuasiCrystal &&)
+void QuasiCrystalsScene::AddQuasiCrystal(QuasiCrystal &&quacry)
 {
-
+    quacries_.emplace_back(
+                std::make_unique<QuasiCrystal>(
+                    std::move(quacry)));
 }
 
 QuasiCrystal *QuasiCrystalsScene::ActiveQuasiCrystal()
@@ -174,9 +211,9 @@ QuasiCrystal *QuasiCrystalsScene::ActiveQuasiCrystal()
     return active_quacry_;
 }
 
-void QuasiCrystalsScene::ActiveQuasiCrystal(QuasiCrystal *)
+void QuasiCrystalsScene::ActiveQuasiCrystal(QuasiCrystal * active)
 {
-
+    active_quacry_ = active;
 }
 
 bool QuasiCrystalsScene::HasQuasiCrystal()
@@ -184,9 +221,23 @@ bool QuasiCrystalsScene::HasQuasiCrystal()
     return !quacries_.empty();
 }
 
+QuasiCrystalsScene::Projection *QuasiCrystalsScene::ActiveProjection()
+{
+    return GetActiveCamera();
+}
+
+void QuasiCrystalsScene::ActiveProjection(QuasiCrystalsScene::Projection* projection)
+{
+    active_camera_= projection;
+}
 
 
 
+void QuasiCrystalsScene::SetUniformWindow(Window* window)
+{
+    shaders_["Shape"]->SetUniform<glm::mat4>("transform", window->TransformWorld());
+    shaders_["Shape"]->SetUniform<float>("depth", window->depth_);
+}
 
 
 

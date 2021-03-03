@@ -4,7 +4,7 @@ namespace kipod::QuasiCrystals{
 
 void PointSet::Init()
 {
-    LOG_ENGINE("Initialize PointSet");
+    LOG_INFO("Initialize PointSet");
     MakeSample();
 
     std::string name = "PointSet";
@@ -12,7 +12,7 @@ void PointSet::Init()
     layout->SetupPointSet(&sample_);
     AddLayout(name, std::move(*layout));
 
-    lattice_data_ =  std::make_shared<LatticeData>();
+    lattice_data_ =  std::make_unique<LatticeData>();
     lattice_data_->size = size(sample_);
 }
 

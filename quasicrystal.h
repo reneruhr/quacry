@@ -3,16 +3,17 @@
 #include "../shapes/shape.h"
 
 namespace kipod::QuasiCrystals{
+using Window = kipod::Shapes::Shape;
+
+
+
 class QuasiCrystal : public PointSet
 {
-    using Window = kipod::Shapes::Shape;
-    using Vector = vec4;
-    using Basis = mat4;
-
-public:
-    QuasiCrystal(Basis basis, Window window);
+public:    
+    QuasiCrystal(Basis basis, Window window, Sample sample);
 
     std::unique_ptr<Window> window_;
+
 
     virtual void Init() override;
     virtual void Draw() override;

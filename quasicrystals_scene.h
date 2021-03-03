@@ -17,7 +17,8 @@ class QuasiCrystalsScene :  public kipod::Listener,
 
 
         using QuasiCrystalContainer = std::vector<std::unique_ptr<QuasiCrystal>>;
-        using Camera = kipod::RenderCamera;
+        using Projection = kipod::RenderCamera;
+        using ProjectionContainer = std::vector<std::unique_ptr<RenderCamera> > ;
 
         QuasiCrystal* active_quacry_ = nullptr;
 
@@ -30,19 +31,20 @@ class QuasiCrystalsScene :  public kipod::Listener,
 
         void SetupLayout(QuasiCrystal* quacry);
         void SetupShaders();
-        void SetupUniforms(Camera* camera, QuasiCrystal *quacry);
+        void SetupUniforms(Projection *projection, QuasiCrystal *quacry);
 
-        void SetUniformInternal(Camera *camera, QuasiCrystal *quacry);
-        void SetUniformPhysical(Camera *camera, QuasiCrystal *quacry);
-        void SetUniformPhysicalBox(Camera *camera, QuasiCrystal *quacry);
+        void SetUniformInternal(Projection *projection, QuasiCrystal *quacry);
+        void SetUniformPhysical(Projection *projection, QuasiCrystal *quacry);
+        void SetUniformPhysicalBox(Projection *projection, QuasiCrystal *quacry);
+        void SetUniformWindow(Window *window);
 
 
 public:
         QuasiCrystalsScene(int width, int height);
-        QuasiCrystalsScene(QuasiCrystalsScene&) = default;
-        QuasiCrystalsScene& operator=(QuasiCrystalsScene&) = default;
+        QuasiCrystalsScene(QuasiCrystalsScene&) = delete;
+        QuasiCrystalsScene& operator=(QuasiCrystalsScene&) = delete;
         QuasiCrystalsScene(QuasiCrystalsScene&&) = default;
-        QuasiCrystalsScene& operator=(QuasiCrystalsScene&&) = default;
+        QuasiCrystalsScene& operator=(QuasiCrystalsScene&&) = delete;
         //~QuasiCrystalsScene() = default;
 
 protected:
@@ -53,12 +55,15 @@ protected:
 
 
         QuasiCrystalContainer quacries_;
+        ProjectionContainer& projections_ = RenderScene::cameras_;
 
         void AddQuasiCrystal(QuasiCrystal&&);
         QuasiCrystal* ActiveQuasiCrystal();
         void ActiveQuasiCrystal(QuasiCrystal*);
         bool HasQuasiCrystal();
 
+        Projection* ActiveProjection();
+        void ActiveProjection(Projection*);
 };
 
 }

@@ -2,6 +2,9 @@
 #include "../../math/lattice.h"
 
 namespace kipod::QuasiCrystals{
+using Vector = vec4;
+using Basis = mat4;
+using Sample = std::vector< int >;
 
 struct LatticeData{
     GLuint vao, vbo;
@@ -25,28 +28,22 @@ struct LatticeData{
 class PointSet : public Lattice, public kipod::RenderObject
 {
 public:
-    PointSet(std::vector< int > sample_size = {-10,10,-10,10,-10,10,-10,10}, mat4 basis = mat4()) : Lattice(sample_size, basis)
+    PointSet(Basis basis = Basis(), Sample sample = {-10,10,-10,10,-10,10,-10,10}) :
+        Lattice(sample, basis)
     {
-        LOG("Call PointSet Constructor with sample_size data {}, {} ,{}, {} ,{} ,{} ,{}, {}",
+        LOG_INFO("Call PointSet Constructor with sample_size data {}, {} ,{}, {} ,{} ,{} ,{}, {}",
             sample_size_[0],sample_size_[1],sample_size_[2],sample_size_[3],sample_size_[4],sample_size_[5],
                 sample_size_[6],sample_size_[7]);
-        LOG("...and basis {}", basis_);
+        LOG_INFO("...and basis {}", basis_);
     }
 
     virtual void Init();
     virtual void Draw();
-    mat4 GetWorldTransform(){
-        return world_transform_;
-    }
-    void BaseChange(mat4 new_basis);
+
+    void BaseChange(Basis new_basis);
     void UpdatePoints();
 public:
-    mat4 world_transform_;
-    std::shared_ptr<LatticeData> lattice_data_= nullptr;
-
-    void SetPointSize(float size){
-        lattice_data_->point_size_ = size;
-    }
+    std::unique_ptr<LatticeData> lattice_data_= nullptr;
 
 };
 

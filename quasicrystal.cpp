@@ -1,16 +1,23 @@
 #include "quasicrystal.h"
+namespace kipod::QuasiCrystals{
 
-kipod::QuasiCrystals::QuasiCrystal::QuasiCrystal(kipod::QuasiCrystals::QuasiCrystal::Basis basis, kipod::QuasiCrystals::QuasiCrystal::Window window)
+QuasiCrystal::QuasiCrystal(Basis basis, Window window, Sample sample)
+    : PointSet(basis,sample),
+      window_(std::make_unique<Window>(window))
 {
 
 }
 
-void kipod::QuasiCrystals::QuasiCrystal::Init()
+void QuasiCrystal::Init()
 {
+    PointSet::Init();
+    window_->Init();
 
 }
 
-void kipod::QuasiCrystals::QuasiCrystal::Draw()
+void QuasiCrystal::Draw()
 {
+
+}
 
 }
