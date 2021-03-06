@@ -3,7 +3,7 @@
 
 namespace kipod::QuasiCrystals{
 
-    QuasiCrystal AmmanBenker();
+    QuasiCrystal AmmannBeenker();
 
 }
 

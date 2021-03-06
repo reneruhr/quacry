@@ -3,7 +3,7 @@
 
 namespace kipod::QuasiCrystals{
 
-    QuasiCrystal AmmanBenker()
+    QuasiCrystal AmmannBeenker()
     {
         Basis square_root_matrix = transpose(MinkowskiEmbedding(2).Embedding());
 

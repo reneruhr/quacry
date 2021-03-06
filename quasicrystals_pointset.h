@@ -37,6 +37,11 @@ public:
         LOG_INFO("...and basis {}", basis_);
     }
 
+//    PointSet& operator=(const PointSet&) = default;
+    PointSet& operator=(PointSet&&) = default;
+//    PointSet(const PointSet&) = default;
+    PointSet(PointSet&&) = default;
+
     virtual void Init();
     virtual void Draw();
 

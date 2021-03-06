@@ -2,6 +2,11 @@
 
 namespace kipod::QuasiCrystals{
 
+void QuasiCrystalsConsole::ConsoleContent(){
+
+
+}
+
 
 
 

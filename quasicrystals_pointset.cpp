@@ -22,7 +22,7 @@ void PointSet::Draw()
 }
 
 
-void PointSet::BaseChange(mat4 new_basis){
+void PointSet::BaseChange(Basis new_basis){
     basis_ = new_basis;
     sample_= {};
     MakeSample();
@@ -31,15 +31,9 @@ void PointSet::BaseChange(mat4 new_basis){
 
 void PointSet::UpdatePoints()
 {
+    unsigned long buffer_size = size(sample_) * sizeof(Vector);
+    static_cast<GLRenderLayout*>(Layout())->vbo_->Add(0, buffer_size, (void*)sample_.data());
     lattice_data_->size = size(sample_);
-
-    glBindVertexArray(lattice_data_->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, lattice_data_->vbo);
-    glBufferData(GL_ARRAY_BUFFER, lattice_data_->size * 4 * sizeof(float), sample_.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
 }
 
 }

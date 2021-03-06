@@ -11,9 +11,7 @@ public:
     virtual void Draw() override {
         DrawModuleConsole();
     }
-    virtual void ConsoleContent() override{
-        ImGui::Text(".........");
-    }
+    virtual void ConsoleContent() override;
 };
 
 }

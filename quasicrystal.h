@@ -16,16 +16,9 @@ public:
 
 
     virtual void Init() override;
-    virtual void Draw() override;
+    //virtual void Draw() override;
 
 
-    void SetOutsideVisibility(float alpha){
-        lattice_data_->alpha_ = alpha;
-    }
-    void SetColorZW(float* z, float* w){
-        lattice_data_->z_color_ = vec4(z);
-        lattice_data_->w_color_ = vec4(w);
-    }
 };
 
 }

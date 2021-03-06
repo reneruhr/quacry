@@ -58,7 +58,10 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_["Quasi Internal"]->AttachUniform<glm::vec4>("wColor");
 
 
-
+    shaders_.insert({"Shape", std::make_shared<kipod::Shader>("shape.vert.glsl",   "shape.frag.glsl")});
+    shaders_["Shape"]->AttachUniform<float>("depth");
+    shaders_["Shape"]->AttachUniform<glm::mat4>("transform");
+    shaders_["Shape"]->AttachUniform<glm::vec4>("color");
 }
 
 void QuasiCrystalsScene::SetupUniforms(Projection *projection, QuasiCrystal *quacry)
@@ -86,8 +89,8 @@ void QuasiCrystalsScene::SetUniformInternal(Projection *projection, QuasiCrystal
 
     shader->SetUniform<glm::mat4>("pv",  *projection);
     shader->SetUniform<glm::mat4>("transform", quacry->TransformWorld());
-    std::vector<glm::vec2> shape_vectors = vec2vecToGLM(quacry->window_->transformed_vertices_);
-    shader->SetUniform< std::vector< glm::vec2 > >("shape", shape_vectors, 8);
+    //std::vector<glm::vec2> shape_vectors = vec2vecToGLM(quacry->window_->transformed_vertices_);
+    //shader->SetUniform< std::vector< glm::vec2 > >("shape", shape_vectors, 8);
     GLuint shape = glGetUniformLocation(*shader, "shape");
     glUniform2fv(shape, 8, &quacry->window_->transformed_vertices_[0][0]);
 
