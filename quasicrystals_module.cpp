@@ -4,7 +4,7 @@
 #include "quasicrystals_console.h"
 namespace kipod::QuasiCrystals{
 
-QuasiCrystalsModule::QuasiCrystalsModule(int width, int height)
+QuasiCrystalsModule::QuasiCrystalsModule(std::string name, int width, int height) : Module(name)
 {
     LOG_INFO("Meshmodel OpenGL Render Module constructed");
     scene_ = std::make_shared<QuasiCrystalsScene>(width, height);
