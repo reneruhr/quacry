@@ -1,0 +1,3 @@
+[submodule "kipod"]
+	path = kipod
+	url = ../kipod.git
