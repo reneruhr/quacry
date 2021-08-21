@@ -2,7 +2,6 @@
 
 #include "quasicrystals_module.h"
 
-#include "siegel2021.h"
 
 
 extern unsigned int GLOBAL_SCR_WIDTH;
