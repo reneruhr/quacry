@@ -1,5 +1,5 @@
 #pragma once
-#include "../../core.h"
+#include "kipod.h"
 
 namespace kipod::QuasiCrystals{
 class PhysicalWindow

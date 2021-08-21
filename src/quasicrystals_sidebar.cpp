@@ -1,7 +1,6 @@
 #include "quasicrystals_sidebar.h"
 #include "quasicrystals_scene.h"
-#include "../../engine/engine_gui.h"
-#include "../../math/minkowski_embedding.h"
+#include "math/minkowski_embedding.h"
 #include "quasicrystals_examples.h"
 
 namespace kipod::QuasiCrystals{

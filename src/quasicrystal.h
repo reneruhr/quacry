@@ -1,6 +1,6 @@
 #pragma once
 #include "quasicrystals_pointset.h"
-#include "../shapes/shape.h"
+#include "../kipod/src/modules/shapes/shape.h"
 
 namespace kipod::QuasiCrystals{
 using Window = kipod::Shapes::Shape;

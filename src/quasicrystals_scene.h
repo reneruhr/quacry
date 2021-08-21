@@ -1,5 +1,5 @@
 #pragma once
-#include "../../kipod.h"
+#include "kipod.h"
 #include "quasicrystal.h"
 
 

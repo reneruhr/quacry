@@ -1,5 +1,5 @@
 #include "quasicrystals_examples.h"
-#include "../../math/minkowski_embedding.h"
+#include "math/minkowski_embedding.h"
 
 namespace kipod::QuasiCrystals{
 

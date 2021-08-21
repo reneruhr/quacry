@@ -1,5 +1,5 @@
-#include "../../kipod.h"
-#include "../../math/lattice.h"
+#include "kipod.h"
+#include "math/lattice.h"
 
 namespace kipod::QuasiCrystals{
 using Vector = vec4;
