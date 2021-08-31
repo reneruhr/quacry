@@ -10,6 +10,7 @@ class QuasiCrystalsScene :  public kipod::Listener,
                      public kipod::Controls,
                      public kipod::RenderScene{
                      friend class QuasiCrystalsSidebar;
+                     friend class QuasiCrystalsConsole;
                      friend class QuasiCrystalsModule;
 
 

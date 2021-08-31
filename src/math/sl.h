@@ -1,142 +1,94 @@
-#ifndef SL_H
-#define SL_H
-
+#pragma once
 //#include <Eigen/Dense>
 //#include <Eigen/StdVector>
 //#include <Eigen/Geometry>
 //#include <Eigen/QR>
-
-
-#include "../../kipod/src/utils/mat.h"
-#include "../../kipod/src/utils/vec.h"
+#include <glm/matrix.hpp>
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <unordered_map>
 
 using std::vector;
 using std::string;
 
-typedef vector<vec4> Vectors4;
-typedef vector<mat4> Matrices4;
-typedef vector<vec2> Vectors2;
+typedef glm::mat4 Mat4;
+typedef glm::mat2 Mat2;
+typedef glm::vec4 Vec4;
+typedef glm::vec2 Vec2;
 
-class sl
-{
-public:
-    sl();
+typedef vector<Vec4> Vectors4;
+typedef vector<Mat4> Matrices4;
+typedef vector<Vec2> Vectors2;
+
+inline Mat4 Transpose (const Mat4& m){ return glm::transpose(m); }
+
+enum SL2Embedding {
+    TOP_LEFT, OUTER, BOTTOM_RIGHT, TOP_RIGHT, BOTTOM_LEFT,
+    XZ, YZ, YW,
+    NOT_DEFINED = -1
 };
 
-enum sl2Embedding {
-        TOP_LEFT = 0,
-        OUTER = 1,
-        BOTTOM_RIGHT = 2,
-        TOP_RIGHT = 3,
-        BOTTOM_LEFT = 4,
-        XZ = 5,
-        YZ = 6,
-        YW = 7,
-        NOT_DEFINED = -1
-    };
+enum SL2Type {
+    DILATE, SHEAR_U, SHEAR_L, ROTATE
+};
+
+typedef std::tuple<SL2Type, SL2Embedding, float>  SL2InSL4;
+
+const char* EmbeddingName(SL2Embedding e);
+Mat4 SL2ToSL4(SL2InSL4);
 
 struct EmbeddingDescription {
-        sl2Embedding embed;
-        int pos[4];
-        std::string name;
-        EmbeddingDescription(sl2Embedding em, int pos_in[], std::string name_in){
-            embed = em;
-            for(int i = 0; i < 4; ++i) pos[i] = pos_in[i];
-            name = name_in;
-        }
+    SL2Embedding embed;
+    int pos[4];
+    std::string name;
+
+    EmbeddingDescription(SL2Embedding em, int pos_in[], std::string name_in)
+        : embed(em), name(name_in)
+    {
+        for(int i = 0; i < 4; ++i) pos[i] = pos_in[i];
+    }
 };
 
-enum SL2type {
-            DILATE,
-            SHEAR_U,
-            SHEAR_L,
-            ROTATE
-        };
-
-typedef std::tuple<SL2type, sl2Embedding, float>  sl2insl4;
-
-mat4 sl2tosl4(sl2insl4 sl2matrix);
-
-class sl2{
+class SL2{
     public:
-        mat2 i = mat2(1.0f);
+        constexpr static Mat2 i = Mat2(1.0f);
 
-        mat2 dilate(float t);
+        static Mat2 Dilate(float t);
+        static Mat2 Shear(float s);
+        static Mat2 Shearl(float s);
+        static Mat2 Rotate(float t);
 
-        mat2 shear(float s);
-        mat2 shearl(float s);
-
-        mat2 rotate(float t);
-
-        mat2 fromType(SL2type type, float t);
+        static Mat2 FromType(const SL2Type type, float t);
 };
 
-class sl4 : public sl2{
+class SL4{
     public:
-        mat4 i = mat4(1.0f);
+        constexpr static Mat4 i = Mat4(1.0f);
 
-        mat4 dilateTOPLEFT(float t);
-        mat4 shearTOPLEFT(float t);
-        mat4 shearlTOPLEFT(float t);
-        mat4 rotateTOPLEFT(float t);
-
-//        Eigen::Vector4i outer = Eigen::Vector4i(0,3,2,1);
-//        Eigen::PermutationMatrix<4, 4> P = Eigen::PermutationMatrix<4, 4>(outer);
-
-        mat4 dilateOuter(float t);
-        mat4 shearOuter(float t);
-        mat4 shearlOuter(float t);
-        mat4 rotateOuter(float t);
+        static Mat4 DilateTopLeft(float t);
+        static Mat4 ShearTopLeft(float t);
+        static Mat4 ShearlTopLeft(float t);
+        static Mat4 RotateTopLeft(float t);
 };
-
-
-
-
 
 class MatrixWalk{
     public:
-        MatrixWalk(){}
-        MatrixWalk(vector<sl2insl4> initMatrices){
-            sl2stack=initMatrices;
-            for(auto n: sl2stack) {
-                sl4stack.push_back(sl2tosl4(n));
-                all = sl4stack.back()*all;
-            }
-        }
+        MatrixWalk() {}
+        MatrixWalk(vector<SL2InSL4> init_matrices);
 
-        vector<sl2insl4> sl2stack = {};
-        Matrices4 sl4stack = {};
+        vector<SL2InSL4> SL2_stack_ = {};
+        Matrices4 SL4_stack_ = {};
+        Mat4 current_ = SL4::i;
+        Mat4 candidate_ = current_;
 
-        // Last element gets multiplied from the left.
-        mat4 all;
+        void Append(Mat4 m);
+        void Append(Mat4 m, SL2InSL4 n);
+        void Append(SL2InSL4 n);
+        Mat4& Current();
+        void Modify(int i, SL2InSL4 n);
+        Mat4& Candidate(){ return candidate_;}
 
-
-        void append(mat4 m);
-        void append(mat4 m, sl2insl4 n);
-        void append(sl2insl4 n);
-        mat4 multiplyAll();
-
-        void modify(int i, sl2insl4 n);
-
-        bool allUptoDate = true;
-
+    private:
+        bool updated_ = true;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif // SL_H

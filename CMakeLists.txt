@@ -29,6 +29,10 @@ add_executable(quacry
   src/quasicrystals_examples.cpp
   src/quasicrystals_physical_window.h
   src/quasicrystals_physical_window.cpp
+  src/quasicrystals_guimathcontrol.h
+  src/quasicrystals_guimathcontrol.cpp
+
+
 
   src/math/lattice.cpp
   src/math/minkowski_embedding.cpp
@@ -39,3 +43,5 @@ add_executable(quacry
 )
 
 target_link_libraries(quacry PUBLIC kipod)
+
+file( COPY ${CMAKE_CURRENT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )

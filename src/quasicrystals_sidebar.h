@@ -1,12 +1,9 @@
 #pragma once
 #include "kipod.h"
 namespace kipod::QuasiCrystals{
-class QuasiCrystalsSidebar:
-        public kipod::Sidebar{
-    friend class QuasiCrystalsModule;
-
+class QuasiCrystalsSidebar: public kipod::Sidebar{
+friend class QuasiCrystalsModule;
 public:
-
 protected:
     QuasiCrystalsSidebar(std::shared_ptr<kipod::RenderScene> scene) : kipod::Sidebar(scene) {}
 
@@ -14,10 +11,8 @@ protected:
 
     void AddQuasiCrystal();
     void QuasiCrystalsList();
-    void LatticeWindowControl();
+    void LatticeControl();
+    void WindowControl();
     void ViewOptions();
 };
-
-
-
 }

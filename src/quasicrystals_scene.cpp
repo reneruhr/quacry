@@ -25,12 +25,13 @@ void QuasiCrystalsScene::SetupLayout(QuasiCrystal *quacry)
 
 void QuasiCrystalsScene::SetupShaders()
 {
-    shaders_.insert({"Quasi Physical", std::make_shared<kipod::Shader>("inside_polygon.vert.glsl", "points.frag.glsl")});
-    shaders_.insert({"Quasi Physical Box", std::make_shared<kipod::Shader>("points.vert.glsl", "points.frag.glsl")});
-    shaders_.insert({"Quasi Internal", std::make_shared<kipod::Shader>("inside_polygon_window.vert.glsl", "points.frag.glsl")});
-    shaders_.insert({"Quasi Physical Texture", std::make_shared<kipod::Shader>("inside_polygon.vert.glsl", "renderToTexture.frag.glsl")});
+//    shaders_.insert({"Quasi Basic", std::make_shared<kipod::Shader>("quasi_basic.vert.glsl", "points.frag.glsl")});
+    shaders_.insert({"Quasi Physical", std::make_shared<kipod::Shader>("shaders/inside_polygon.vert.glsl", "shaders/points.frag.glsl")});
+    shaders_.insert({"Quasi Physical Box", std::make_shared<kipod::Shader>("shaders/points.vert.glsl", "shaders/points.frag.glsl")});
+    shaders_.insert({"Quasi Internal", std::make_shared<kipod::Shader>("shaders/inside_polygon_window.vert.glsl", "shaders/points.frag.glsl")});
+    shaders_.insert({"Quasi Physical Texture", std::make_shared<kipod::Shader>("shaders/inside_polygon.vert.glsl", "kipod/shaders/renderToTexture.frag.glsl")});
 
-    shaders_.insert({"PointSet", std::make_shared<kipod::Shader>("points.vert.glsl", "points.frag.glsl")});
+    shaders_.insert({"PointSet", std::make_shared<kipod::Shader>("shaders/points.vert.glsl", "shaders/points.frag.glsl")});
 
     shaders_["Quasi Physical"]->AttachUniform<glm::mat4>("pv");
     shaders_["Quasi Physical"]->AttachUniform<glm::mat4>("transform");
@@ -58,7 +59,7 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_["Quasi Internal"]->AttachUniform<glm::vec4>("wColor");
 
 
-    shaders_.insert({"Shape", std::make_shared<kipod::Shader>("shape.vert.glsl",   "shape.frag.glsl")});
+    shaders_.insert({"Shape", std::make_shared<kipod::Shader>("kipod/shaders/shape.vert.glsl",   "kipod/shaders/shape.frag.glsl")});
     shaders_["Shape"]->AttachUniform<float>("depth");
     shaders_["Shape"]->AttachUniform<glm::mat4>("transform");
     shaders_["Shape"]->AttachUniform<glm::vec4>("color");
@@ -168,6 +169,7 @@ void QuasiCrystalsScene::Setup()
                                   pw.Far()));
     ActiveProjection(projections_.back().get());
 
+    glEnable(GL_PROGRAM_POINT_SIZE);
     LOG_INFO("Quasi Crystals Scene Initialized.");
     LOG_CONSOLE("Quasi Crystals Scene Initialized.");
 }

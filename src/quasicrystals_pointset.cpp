@@ -21,8 +21,8 @@ void PointSet::Draw()
    RenderObject::Draw("PointSet");
 }
 
-
-void PointSet::BaseChange(Basis new_basis){
+void PointSet::BaseChange(Basis new_basis)
+{
     basis_ = new_basis;
     sample_= {};
     MakeSample();
@@ -35,5 +35,4 @@ void PointSet::UpdatePoints()
     static_cast<GLRenderLayout*>(Layout())->vbo_->Add(0, buffer_size, (void*)sample_.data());
     lattice_data_->size = size(sample_);
 }
-
 }

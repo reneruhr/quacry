@@ -12,6 +12,8 @@ public:
         DrawModuleConsole();
     }
     virtual void ConsoleContent() override;
+
+    void SL2Action();
 };
 
 }

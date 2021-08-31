@@ -5,8 +5,6 @@
 namespace kipod::QuasiCrystals{
 using Window = kipod::Shapes::Shape;
 
-
-
 class QuasiCrystal : public PointSet
 {
 public:    
@@ -14,11 +12,7 @@ public:
 
     std::unique_ptr<Window> window_;
 
-
     virtual void Init() override;
     //virtual void Draw() override;
-
-
 };
-
 }

@@ -2,17 +2,19 @@
 #include "quasicrystals_scene.h"
 #include "math/minkowski_embedding.h"
 #include "quasicrystals_examples.h"
+#include "quasicrystals_guimathcontrol.h"
 
 namespace kipod::QuasiCrystals{
 
 void QuasiCrystalsSidebar::SideBarContent()
 {
-    AddQuasiCrystal();
     QuasiCrystalsList();
+    AddQuasiCrystal();
 
     if (ImGui::CollapsingHeader("Quasicrystals")){
-    LatticeWindowControl();
-    ViewOptions();
+        LatticeControl();
+        WindowControl();
+        ViewOptions();
     }
 }
 
@@ -22,15 +24,15 @@ void QuasiCrystalsSidebar::AddQuasiCrystal()
 
     ImGui::PushID("Add Quacry");
     if(ImGui::Button("Add")){
-                            LOG_CONSOLE("Please enter Basis in Console!");
-                        }
+        LOG_CONSOLE("Please enter Basis in Console!");
+    }
     ImGui::PopID();
     ImGui::PushID("Add Quacry Examples");
     if(ImGui::Button("Add Ammann Beenker")){
-                            LOG_CONSOLE("Added Ammann Beenker");
-                            scene->AddQuasiCrystal(AmmannBeenker());
-                            scene->ActiveQuasiCrystal(scene->quacries_.back().get());
-                        }
+        LOG_CONSOLE("Added Ammann Beenker");
+        scene->AddQuasiCrystal(AmmannBeenker());
+        scene->ActiveQuasiCrystal(scene->quacries_.back().get());
+    }
     ImGui::PopID();
     ImGui::Separator();
 }
@@ -56,23 +58,68 @@ void QuasiCrystalsSidebar::QuasiCrystalsList()
     }
 }
 
-void QuasiCrystalsSidebar::LatticeWindowControl()
+void QuasiCrystalsSidebar::LatticeControl()
 {
-    static glm::mat4 scale_matrix;
+    if (ImGui::CollapsingHeader("Lattice Control")){
+
+    auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
+    auto quacry = scene->ActiveQuasiCrystal();
+
+    static glm::mat4 scale_matrix = glm::mat4(1.0);
+    static glm::mat4 current_transform = glm::mat4(1.0);
+
+    if (quacry){ 
+
+    if (ImGui::TreeNode("Lattice:")){
+        if(ImGui::Button("Transpose Lattice"))
+           quacry->BaseChange(transpose(quacry->GetBasisMatrix()));
+        static float lattice_scale=1;
+        ImGui::Text("Scale Lattice (uniformly xyzw)");
+        if (ImGui::SliderFloat("##LatticeScale", &lattice_scale, 0.2, 5.0f)){
+           scale_matrix = glm::mat4(lattice_scale);
+           quacry->world_->Replace(current_transform*scale_matrix);
+        }
+        ImGui::Columns(2, NULL, true);
+        ImGui::Text("Basis:");
+        DrawColumnMatrix4(quacry->basis_);
+        ImGui::NextColumn();
+        ImGui::Text("Current Transformation:");
+        DrawColumnMatrix4(quacry->Transform());
+        ImGui::Columns(1);
+        ImGui::TreePop();
+    }// Lattice
+
+        /*
+        if (ImGui::TreeNode("View:")){
+            static int selected_view = -1;
+            for (int n = 0; n <  scene->numberOfCameras(); n++){
+                char buf[64];
+                if(n==0) sprintf(buf, "Perspective Projection to XYZ (close up) ");
+                else if(n==1) sprintf(buf, "Perspective Projection to XYZ (far away)");
+                else if(n==2) sprintf(buf, "Cut and Project");
+
+                if (ImGui::Selectable(buf, selected_view == n)){
+                    selected_view = n;
+                    scene->setActiveCamera(selected_view);
+                }
+            }
+            ImGui::TreePop();
+        }// View
+        */
+
+    } // quacry
+    } //Lattice control
+}
+
+void QuasiCrystalsSidebar::WindowControl()
+{
     static glm::mat2 window_matrix;
-    glm::mat4 temporaryMatrixView;
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
     auto quacry = scene->ActiveQuasiCrystal();
 
     if (quacry){ // ImGui::TreeNode("Modify Lattice and Window") &&
             auto window = quacry->window_.get();
 
-            static float lattice_scale=1;
-            ImGui::Text("Scale Lattice (uniformly xyzw)");
-            if (ImGui::SliderFloat("##LatticeScale", &lattice_scale, 0.2, 5.0f)){
-               scale_matrix = mat4(lattice_scale);
-               quacry->world_->Replace(temporaryMatrixView*scale_matrix);
-            }
             static float window_scale=1;
             ImGui::Text("Scale Window (uniformly zw)");
             if (ImGui::SliderFloat("##window_scale", &window_scale, 0.2, 5.0f)){
@@ -82,8 +129,6 @@ void QuasiCrystalsSidebar::LatticeWindowControl()
                window->UpdateShape();
             }
 
-           if(ImGui::Button("Transpose Lattice"))
-               quacry->BaseChange(transpose(quacry->GetBasisMatrix()));
            if(ImGui::Button("Ammann–Beenker Sublattice"))
                quacry->BaseChange(transpose(MinkowskiEmbedding(2).Embedding(
                            {{1,0},{0,0}},

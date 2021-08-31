@@ -2,8 +2,8 @@
 #include "math/lattice.h"
 
 namespace kipod::QuasiCrystals{
-using Vector = vec4;
-using Basis = mat4;
+using Vector = glm::vec4;
+using Basis = glm::mat4;
 using Sample = std::vector< int >;
 
 struct LatticeData{
@@ -31,10 +31,10 @@ public:
     PointSet(Basis basis = Basis(), Sample sample = {-10,10,-10,10,-10,10,-10,10}) :
         Lattice(sample, basis)
     {
-        LOG_INFO("Call PointSet Constructor with sample_size data {}, {} ,{}, {} ,{} ,{} ,{}, {}",
-            sample_size_[0],sample_size_[1],sample_size_[2],sample_size_[3],sample_size_[4],sample_size_[5],
-                sample_size_[6],sample_size_[7]);
-        LOG_INFO("...and basis {}", basis_);
+        //LOG_INFO("Call PointSet Constructor with sample_size data {}, {} ,{}, {} ,{} ,{} ,{}, {}",
+        //   sample_size_[0],sample_size_[1],sample_size_[2],sample_size_[3],sample_size_[4],sample_size_[5],
+        //      sample_size_[6],sample_size_[7]);
+        //LOG_INFO("...and basis {}", basis_);
     }
 
 //    PointSet& operator=(const PointSet&) = default;
@@ -47,9 +47,6 @@ public:
 
     void BaseChange(Basis new_basis);
     void UpdatePoints();
-public:
     std::unique_ptr<LatticeData> lattice_data_= nullptr;
-
 };
-
 }
