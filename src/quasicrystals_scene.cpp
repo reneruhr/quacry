@@ -140,7 +140,9 @@ void QuasiCrystalsScene::SetUniformPhysicalBox(Projection *projection, QuasiCrys
 
 QuasiCrystalsScene::QuasiCrystalsScene(int width, int height) : RenderScene(width, height)
 {
-
+    framebuffers_["Physical Space"] = framebuffers_["Module Viewport"];
+    framebuffers_.erase("Module Viewport");
+    framebuffers_["Internal Space"] = std::make_shared<kipod::FrameBuffer>(width_, height_);
 }
 
 void QuasiCrystalsScene::Signup()
@@ -152,7 +154,6 @@ void QuasiCrystalsScene::Receive(std::shared_ptr<Event> event)
 {
 
 }
-
 
 void QuasiCrystalsScene::Setup()
 {
@@ -176,31 +177,33 @@ void QuasiCrystalsScene::Setup()
 
 void QuasiCrystalsScene::Draw()
 {
-    framebuffer_->Bind();
+    auto quacry = ActiveQuasiCrystal();
+    if(quacry){
+    framebuffers_["Physical Space"]->Bind();
+    glEnable( GL_BLEND );
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for(auto& quacry : quacries_){
-        glEnable( GL_BLEND );
+    shaders_["Quasi Physical"]->Use();
+    SetUniformPhysical(ActiveProjection(), quacry);
+    quacry->Draw();
 
-        shaders_["Quasi Physical"]->Use();
-        SetUniformPhysical(ActiveProjection(), quacry.get());
-        quacry->Draw();
+    framebuffers_["Internal Space"]->Bind();
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
 
-        glEnable(GL_DEPTH_TEST);
+    shaders_["Shape"]->Use();
+    SetUniformWindow(quacry->window_.get());
+    quacry->window_->Draw();
 
-        shaders_["Shape"]->Use();
-        SetUniformWindow(quacry->window_.get());
-        quacry->window_->Draw();
+    shaders_["Quasi Internal"]->Use();
+    SetUniformInternal(ActiveProjection(), quacry);
+    quacry->Draw();
 
-        shaders_["Quasi Internal"]->Use();
-        SetUniformInternal(ActiveProjection(), quacry.get());
-        quacry->Draw();
-
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
     }
-
     kipod::RenderManager::Bind(0);
 }
 
