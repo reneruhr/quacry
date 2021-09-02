@@ -2,13 +2,8 @@
 
 #include "quasicrystals_module.h"
 
-
-
 extern unsigned int GLOBAL_SCR_WIDTH;
 extern unsigned int GLOBAL_SCR_HEIGHT;
-
-
-using namespace std;
 
 int main( int argc, char **argv )
 {

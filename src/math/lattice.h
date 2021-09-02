@@ -16,16 +16,14 @@ public:
     std::vector<Vector> sample_;
     Sample sample_size_;
 
-    Lattice(Sample sample_size = {-10,10,-10,10,-10,10,0,0}, Basis basis = Basis())
-        :  basis_(basis), sample_size_(sample_size)
-    {
-        assert(size(sample_size) == 8);
-    }
+    Lattice(Sample sample_size = {-10,10,-10,10,-10,10,0,0}, Basis basis = Basis(1.0f))
+        :  basis_(basis), sample_size_(sample_size) {}
 
     Lattice& operator=(const Lattice&) = default;
     Lattice& operator=(Lattice&&) = default;
     Lattice(const Lattice&) = default;
     Lattice(Lattice&&) = default;
+    ~Lattice() = default;
 
     Basis GetBasisMatrix()
     {

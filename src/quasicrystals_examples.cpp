@@ -15,6 +15,4 @@ namespace kipod::QuasiCrystals{
 
         return quacryOctagon;
     }
-
-
 }

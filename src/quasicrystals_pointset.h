@@ -20,10 +20,7 @@ struct LatticeData{
     vec4 w_color_ = {0.0f, 1.0f, 0.00f, 0.3f};
 
     float depth_ = -0.7f;
-
-    LatticeData(){}
 };
-
 
 class PointSet : public Lattice, public kipod::RenderObject
 {
