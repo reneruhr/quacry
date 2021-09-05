@@ -3,19 +3,15 @@
 #include "math/minkowski_embedding.h"
 #include "quasicrystals_examples.h"
 #include "quasicrystals_guimathcontrol.h"
-
 namespace kipod::QuasiCrystals{
 
 void QuasiCrystalsSidebar::SideBarContent()
 {
-    QuasiCrystalsList();
     AddQuasiCrystal();
-
-    if (ImGui::CollapsingHeader("Quasicrystals")){
-        LatticeControl();
-        WindowControl();
-        ViewOptions();
-    }
+    QuasiCrystalsList();
+    LatticeControl();
+    WindowControl();
+    ViewOptions();
 }
 
 void QuasiCrystalsSidebar::AddQuasiCrystal()
@@ -60,7 +56,7 @@ void QuasiCrystalsSidebar::QuasiCrystalsList()
 
 void QuasiCrystalsSidebar::LatticeControl()
 {
-    if (ImGui::CollapsingHeader("Lattice Control")){
+    if (ImGui::CollapsingHeader("Lattice")){
 
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
     auto quacry = scene->ActiveQuasiCrystal();
@@ -69,10 +65,8 @@ void QuasiCrystalsSidebar::LatticeControl()
     static glm::mat4 current_transform = glm::mat4(1.0);
 
     if (quacry){ 
-
-    if (ImGui::TreeNode("Lattice:")){
         if(ImGui::Button("Transpose Lattice"))
-           quacry->BaseChange(transpose(quacry->GetBasisMatrix()));
+           quacry->BaseChange(transpose(quacry->GetBasis()));
         static float lattice_scale=1;
         ImGui::Text("Scale Lattice (uniformly xyzw)");
         if (ImGui::SliderFloat("##LatticeScale", &lattice_scale, 0.2, 5.0f)){
@@ -86,8 +80,6 @@ void QuasiCrystalsSidebar::LatticeControl()
         ImGui::Text("Current Transformation:");
         DrawColumnMatrix4(quacry->Transform());
         ImGui::Columns(1);
-        ImGui::TreePop();
-    }// Lattice
 
         /*
         if (ImGui::TreeNode("View:")){
@@ -113,6 +105,8 @@ void QuasiCrystalsSidebar::LatticeControl()
 
 void QuasiCrystalsSidebar::WindowControl()
 {
+    if (ImGui::CollapsingHeader("Window")){
+
     static glm::mat2 window_matrix;
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
     auto quacry = scene->ActiveQuasiCrystal();
@@ -144,8 +138,8 @@ void QuasiCrystalsSidebar::WindowControl()
 
     // ImGui::TreePop();
     }
+    }
 }
-
 
 void SetOutsideVisibility(LatticeData* data, float alpha){
     data->alpha_ = alpha;
@@ -160,6 +154,7 @@ void SetPointSize(LatticeData* data, float size){
 
 void QuasiCrystalsSidebar::ViewOptions()
 {
+    if (ImGui::CollapsingHeader("View Options")){
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
     auto quacry = scene->ActiveQuasiCrystal();
 
@@ -170,10 +165,16 @@ void QuasiCrystalsSidebar::ViewOptions()
         static float point_size = data->point_size_;
         static float point_size_window = data->point_size_window_;
 
+        static bool edges = false;
+        if(ImGui::Checkbox("Show edges", &edges)){
+            data->edges_ = edges;
+        }
+
         ImGui::Text("Point Size");
         if (ImGui::SliderFloat("##PointScale", &point_size, 1.0f, 10.0f)){
            SetPointSize(data, point_size);
         }
+
         ImGui::Text("Point Size in Window");
         if (ImGui::SliderFloat("##PointScaleWindow", &point_size_window, 0.1f, 10.0f)){
            data->point_size_window_ = point_size_window;
@@ -189,7 +190,6 @@ void QuasiCrystalsSidebar::ViewOptions()
         if (ImGui::SliderFloat("##depth2", &depth_shader_slider, -1.2f, 1.2f)){
            window->depth_ = depth_shader_slider;
         }
-
 
         static float visibility_outside_window=0.01f;
         ImGui::Text("Change Transparency of points OUTSIDE the window");
@@ -219,7 +219,6 @@ void QuasiCrystalsSidebar::ViewOptions()
 
         //ImGui::TreePop();
     }
+    }
 }
-
-
 }

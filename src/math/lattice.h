@@ -25,7 +25,7 @@ public:
     Lattice(Lattice&&) = default;
     ~Lattice() = default;
 
-    Basis GetBasisMatrix()
+    Basis GetBasis()
     {
         return basis_;
     }

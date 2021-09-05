@@ -6,6 +6,7 @@ uniform mat2 polygon_transform;
 
 uniform mat4 pv;
 uniform mat4 transform;
+uniform mat4 basis;
 
 uniform vec2[8] shape;
 uniform int n;

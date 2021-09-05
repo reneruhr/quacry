@@ -7,9 +7,6 @@ using Basis = glm::mat4;
 using Sample = std::vector< int >;
 
 struct LatticeData{
-    GLuint vao, vbo;
-    GLuint u_binding_point= 1, u_buffer, u_block_index;
-    GLuint u_binding_point_window= 2, u_buffer_window, u_block_index_window;
     int size;
     float point_size_=5.0f;
     float point_size_window_ = 3.0f;
@@ -20,6 +17,7 @@ struct LatticeData{
     vec4 w_color_ = {0.0f, 1.0f, 0.00f, 0.3f};
 
     float depth_ = -0.7f;
+    bool edges_ = false;
 };
 
 class PointSet : public Lattice, public kipod::RenderObject

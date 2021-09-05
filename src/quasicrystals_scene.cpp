@@ -26,22 +26,27 @@ void QuasiCrystalsScene::SetupLayout(QuasiCrystal *quacry)
 void QuasiCrystalsScene::SetupShaders()
 {
     shaders_.insert({"Quasi Physical", std::make_shared<kipod::Shader>("shaders/inside_polygon.vert.glsl", "shaders/points.frag.glsl")});
-    //shaders_.insert({"Quasi Physical Box", std::make_shared<kipod::Shader>("shaders/points.vert.glsl", "shaders/points.frag.glsl")});
     shaders_.insert({"Quasi Internal", std::make_shared<kipod::Shader>("shaders/inside_polygon_window.vert.glsl", "shaders/points.frag.glsl")});
-    //shaders_.insert({"Quasi Physical Texture", std::make_shared<kipod::Shader>("shaders/inside_polygon.vert.glsl", "kipod/shaders/renderToTexture.frag.glsl")});
 
-    //shaders_.insert({"PointSet", std::make_shared<kipod::Shader>("shaders/points.vert.glsl", "shaders/points.frag.glsl")});
+    shaders_.insert({"Quasi Physical with Edges", std::make_shared<kipod::Shader>("shaders/inside_polygon_with_edges.vert.glsl", "shaders/points.frag.glsl", "shaders/edges.geom.glsl")});
+
+    shaders_["Quasi Physical with Edges"]->AttachUniform<glm::mat4>("pv");
+    shaders_["Quasi Physical with Edges"]->AttachUniform<glm::mat4>("transform");
+    shaders_["Quasi Physical with Edges"]->AttachUniform<glm::vec2>("shape");
+    shaders_["Quasi Physical with Edges"]->AttachUniform<int>("n");
+    shaders_["Quasi Physical with Edges"]->AttachUniform<glm::mat4>("basis");
 
     shaders_["Quasi Physical"]->AttachUniform<glm::mat4>("pv");
     shaders_["Quasi Physical"]->AttachUniform<glm::mat4>("transform");
     shaders_["Quasi Physical"]->AttachUniform<glm::vec2>("shape");
+    shaders_["Quasi Physical"]->AttachUniform<int>("n");
+    shaders_["Quasi Physical"]->AttachUniform<glm::mat4>("basis");
     shaders_["Quasi Physical"]->AttachUniform<float>("point_size");
     shaders_["Quasi Physical"]->AttachUniform<float>("alpha");
     shaders_["Quasi Physical"]->AttachUniform<float>("zdecay");
     shaders_["Quasi Physical"]->AttachUniform<float>("wdecay");
     shaders_["Quasi Physical"]->AttachUniform<glm::vec4>("zColor");
     shaders_["Quasi Physical"]->AttachUniform<glm::vec4>("wColor");
-    shaders_["Quasi Physical"]->AttachUniform<int>("n");
 
     shaders_["Quasi Internal"]->AttachUniform<float>("depth");
     shaders_["Quasi Internal"]->AttachUniform<glm::mat4>("shape_transform");
@@ -64,7 +69,6 @@ void QuasiCrystalsScene::SetupShaders()
 
 void QuasiCrystalsScene::SetupUniforms(Projection *projection, QuasiCrystal *quacry)
 {
-
     SetUniformInternal(projection, quacry);
     SetUniformPhysical(projection, quacry);
     SetUniformPhysicalBox(projection, quacry);
@@ -113,12 +117,29 @@ void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, QuasiCrystal
     shader->SetUniform<int>("n", window->NumberEdges());
     shader->SetUniform<glm::mat4>("pv", *projection);
     shader->SetUniform<glm::mat4>("transform", quacry->TransformWorld());
+    shader->SetUniform<glm::mat4>("basis", quacry->GetBasis());
     shader->SetUniform<float>("point_size", data->point_size_);
     shader->SetUniform<float>("alpha", data->alpha_);
     shader->SetUniform<float>("zdecay", data->z_decay_);
     shader->SetUniform<float>("wdecay", data->w_decay_);
     shader->SetUniform<glm::vec4>("zColor", data->z_color_);
     shader->SetUniform<glm::vec4>("wColor", data->w_color_);
+}
+
+void QuasiCrystalsScene::SetUniformPhysicalWithEdges(Projection *projection, QuasiCrystal *quacry)
+{
+    auto data = quacry->lattice_data_.get();
+    auto window = quacry->window_.get();
+
+    auto shader = shaders_["Quasi Physical with Edges"];
+
+    GLuint shape = glGetUniformLocation(*shader, "shape");
+    glUniform2fv(shape, window->NumberEdges(), &window->transformed_vertices_[0][0]);
+
+    shader->SetUniform<int>("n", window->NumberEdges());
+    shader->SetUniform<glm::mat4>("pv", *projection);
+    shader->SetUniform<glm::mat4>("transform", quacry->TransformWorld());
+    shader->SetUniform<glm::mat4>("basis", quacry->GetBasis());
 }
 
 void QuasiCrystalsScene::SetUniformPhysicalBox(Projection *projection, QuasiCrystal *quacry)
@@ -181,9 +202,15 @@ void QuasiCrystalsScene::Draw()
         glEnable( GL_BLEND );
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        shaders_["Quasi Physical"]->Use();
-        SetUniformPhysical(ActiveProjection(), quacry);
+        
+        if(! quacry->lattice_data_->edges_ ){
+            shaders_["Quasi Physical"]->Use();
+            SetUniformPhysical(ActiveProjection(), quacry);
+        }
+        else{
+            shaders_["Quasi Physical with Edges"]->Use();
+            SetUniformPhysicalWithEdges(ActiveProjection(), quacry);
+        }
         quacry->Draw();
 
         framebuffers_["Internal Space"]->Bind();
