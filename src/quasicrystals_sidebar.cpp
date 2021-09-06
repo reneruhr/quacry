@@ -145,8 +145,8 @@ void SetOutsideVisibility(LatticeData* data, float alpha)
 
 void SetColorZW(LatticeData* data, float* z, float* w)
 {
-    data->z_color_ = vec4(z);
-    data->w_color_ = vec4(w);
+    data->color_z_ = glm::make_vec4(z);
+    data->color_w_ = glm::make_vec4(w);
 }
 
 void SetPointSize(LatticeData* data, float size)
@@ -182,35 +182,14 @@ void QuasiCrystalsSidebar::ViewOptions()
            data->point_size_window_ = point_size_window;
         }
 
-        static float depth_slider = data->depth_;
-        ImGui::Text("Depth ZW points");
-        if (ImGui::SliderFloat("##depth", &depth_slider, -1.2f, 1.2f)){
-           data->depth_ = depth_slider;
-        }
-        static float depth_shader_slider = window->depth_;
-        ImGui::Text("Depth Window");
-        if (ImGui::SliderFloat("##depth2", &depth_shader_slider, -1.2f, 1.2f)){
-           window->depth_ = depth_shader_slider;
-        }
-
         static float visibility_outside_window=0.01f;
         ImGui::Text("Change Transparency of points OUTSIDE the window");
         if (ImGui::SliderFloat("##VisibilityScale", &visibility_outside_window, 0.0, 1.0f)){
            SetOutsideVisibility(data, visibility_outside_window);
         }
-
-        static float zdecay=data->z_decay_;
-        static float wdecay=data->w_decay_;
-        ImGui::Text("Color decay from z-origin");
-        if (ImGui::SliderFloat("z##zdecay", &zdecay, 0.01, 1.0f)){
-           data->z_decay_=zdecay;
-        }
-        if (ImGui::SliderFloat("w##wdecay", &wdecay, 0.01, 1.0f)){
-           data->w_decay_=wdecay;
-        }
-
-        static ImVec4 zColor = ImVec4(data->z_color_[0],data->z_color_[1],data->z_color_[2],data->z_color_[3]);
-        static ImVec4 wColor = ImVec4(data->w_color_[0],data->w_color_[1],data->w_color_[2],data->w_color_[3]);
+/*
+        static ImVec4 zColor = ImVec4(data->color_z_[0],data->color_z_[1],data->color_z_[2],data->color_z_[3]);
+        static ImVec4 wColor = ImVec4(data->color_w_[0],data->color_w_[1],data->color_w_[2],data->color_w_[3]);
         ImGui::Text("Give the z/w-coordinates a colour!");
         if (ImGui::ColorEdit4("z##zColor", (float*)&zColor, 0)){
            SetColorZW(data, (float*)&zColor, (float*)&wColor);
@@ -218,6 +197,7 @@ void QuasiCrystalsSidebar::ViewOptions()
         if (ImGui::ColorEdit4("w##wColor", (float*)&wColor, 0)){
            SetColorZW(data, (float*)&zColor, (float*)&wColor);
         }
+        */
     }
     }
 }

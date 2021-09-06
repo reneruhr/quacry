@@ -13,10 +13,9 @@ uniform int n;
 
 uniform float point_size;
 uniform float alpha;
-uniform float zdecay;
-uniform float wdecay;
-uniform vec4 zColor;
-uniform vec4 wColor;
+uniform vec4 bound_zw;
+uniform vec4 color_z;
+uniform vec4 color_w;
 
 out vec4 vert_color;
 
@@ -33,14 +32,15 @@ bool InsideShape(in vec2 p)
 	return true;
 }
 
-float recz(float s)
+vec4 Project(in vec4 v)
 {
-	return min(zdecay/(s+0.01f),1.0f);
+   v.zw = vec2(0,1);
+   return v;
 }
 
-float recw(float s)
+void normalize_zw(inout vec2 zw, in vec4 bound)
 {
-	return min(wdecay/(s+0.01f),1.0f);
+	zw = (zw + bound.xz ) / bound.yw;
 }
 
 void main()
@@ -48,10 +48,11 @@ void main()
 	vec4 point = transform * in_point;
 	vert_color = vec4(0.0f, 0.0f, 1.0f, alpha);
 	if(InsideShape(point.zw)){
-		vert_color = vec4(0.3,0.3,0,0.3)+ recz(abs(point.z))*zColor+recw(abs(point.w))*wColor;
+		vert_color.w = 1;
+		vert_color.xy = point.zw;
+		normalize_zw(vert_color.xy, bound_zw);
 	}
 
-	// Now discard 4-dim data, only keep projection to 3-dim
-	gl_Position = pv * vec4(point.xyz,1);
+	gl_Position = pv * Project(point); 
 	gl_PointSize = point_size;
 }

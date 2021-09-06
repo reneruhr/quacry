@@ -23,13 +23,21 @@ bool InsideShape(in vec2 p)
 	return true;
 }
 
+vec4 Project(in vec4 v)
+{
+   v.zw = vec2(0,1);
+   return v;
+}
+
 out vec4 vert_color;
 
 void main()
 {
   vec4 point = gl_in[0].gl_Position;
-  vec4 pv_point = pv*transform*point; pv_point.zw = vec2(0,1);
-	if(InsideShape((transform * point).zw)){
+  vec4 trans_point = transform * point;
+  vec4 pv_point = pv*Project(trans_point); 
+ // pv_point.zw = vec2(0,1);
+	if(InsideShape(trans_point.zw)){
     for(int i = 0; i<4; ++i){
         vec4 left = transform*(point+basis[i]);
         vec4 right = transform*(point-basis[i]);
@@ -37,16 +45,14 @@ void main()
         if(InsideShape(left.zw)){
                 gl_Position = pv_point;
                 EmitVertex();
-                gl_Position = pv * left;
-                gl_Position.zw = vec2(0,1);
+                gl_Position = pv * Project(left); 
                 EmitVertex();
                 EndPrimitive();
                 }
         if(InsideShape(right.zw)){
                 gl_Position = pv_point;
                 EmitVertex();
-                gl_Position = pv * right;
-                gl_Position.zw = vec2(0,1);
+                gl_Position = pv * Project(right); 
                 EmitVertex();
                 EndPrimitive();
                 }

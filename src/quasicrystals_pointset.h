@@ -4,17 +4,16 @@
 namespace quacry{
 using Vector = glm::vec4;
 using Basis = glm::mat4;
+using Vec4 = glm::vec4;
 using Sample = std::vector< int >;
 
 struct LatticeData{
     int size;
-    float point_size_=5.0f;
+    float point_size_ = 5.0f;
     float point_size_window_ = 3.0f;
     float alpha_ = 0.001f;
-    float z_decay_ = 0.1;
-    float w_decay_ = 0.1;
-    vec4 z_color_ = {1.0f, 0.0f, 0.00f, 0.3f};
-    vec4 w_color_ = {0.0f, 1.0f, 0.00f, 0.3f};
+    Vec4 color_z_ = {1.0f, 0.0f, 0.00f, 0.3f};
+    Vec4 color_w_ = {0.0f, 1.0f, 0.00f, 0.3f};
 
     float depth_ = -0.7f;
     bool edges_ = false;

@@ -4,7 +4,7 @@
 namespace quacry{
 class PhysicalWindow
 {
-        std::vector< float > window_size_;
+    std::vector< float > window_size_;
 public:
     PhysicalWindow(): window_size_{-10,10,-10,10,-3,3,-3,3} {}
     PhysicalWindow(std::vector<float> window_size): window_size_(window_size) {}
@@ -37,7 +37,5 @@ public:
     float Far2(){
         return (*this)[7];
     }
-
 };
-
 }
