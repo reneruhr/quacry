@@ -71,15 +71,12 @@ void QuasiCrystalsSidebar::LatticeControl()
         ImGui::Text("Scale Lattice (uniformly xyzw)");
         if (ImGui::SliderFloat("##LatticeScale", &lattice_scale, 0.2, 5.0f)){
            scale_matrix = glm::mat4(lattice_scale);
-           quacry->world_->Replace(current_transform*scale_matrix);
+           quacry->local_->Replace(scale_matrix);
         }
-        ImGui::Columns(2, NULL, true);
         ImGui::Text("Basis:");
         DrawColumnMatrix4(quacry->basis_);
-        ImGui::NextColumn();
         ImGui::Text("Current Transformation:");
         DrawColumnMatrix4(quacry->Transform());
-        ImGui::Columns(1);
 
         /*
         if (ImGui::TreeNode("View:")){
@@ -141,14 +138,19 @@ void QuasiCrystalsSidebar::WindowControl()
     }
 }
 
-void SetOutsideVisibility(LatticeData* data, float alpha){
+void SetOutsideVisibility(LatticeData* data, float alpha)
+{
     data->alpha_ = alpha;
 }
-void SetColorZW(LatticeData* data, float* z, float* w){
+
+void SetColorZW(LatticeData* data, float* z, float* w)
+{
     data->z_color_ = vec4(z);
     data->w_color_ = vec4(w);
 }
-void SetPointSize(LatticeData* data, float size){
+
+void SetPointSize(LatticeData* data, float size)
+{
     data->point_size_ = size;
 }
 
@@ -216,8 +218,6 @@ void QuasiCrystalsSidebar::ViewOptions()
         if (ImGui::ColorEdit4("w##wColor", (float*)&wColor, 0)){
            SetColorZW(data, (float*)&zColor, (float*)&wColor);
         }
-
-        //ImGui::TreePop();
     }
     }
 }

@@ -89,7 +89,7 @@ void QuasiCrystalsScene::SetUniformInternal(Projection *projection, QuasiCrystal
     shader->SetUniform<glm::mat4>("shape_transform", window->TransformWorld());
 
     shader->SetUniform<glm::mat4>("pv",  *projection);
-    shader->SetUniform<glm::mat4>("transform", quacry->TransformWorld());
+    shader->SetUniform<glm::mat4>("transform", quacry->Transform());
     //std::vector<glm::vec2> shape_vectors = vec2vecToGLM(quacry->window_->transformed_vertices_);
     //shader->SetUniform< std::vector< glm::vec2 > >("shape", shape_vectors, 8);
     GLuint shape = glGetUniformLocation(*shader, "shape");
@@ -116,7 +116,7 @@ void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, QuasiCrystal
 
     shader->SetUniform<int>("n", window->NumberEdges());
     shader->SetUniform<glm::mat4>("pv", *projection);
-    shader->SetUniform<glm::mat4>("transform", quacry->TransformWorld());
+    shader->SetUniform<glm::mat4>("transform", quacry->Transform());
     shader->SetUniform<glm::mat4>("basis", quacry->GetBasis());
     shader->SetUniform<float>("point_size", data->point_size_);
     shader->SetUniform<float>("alpha", data->alpha_);
@@ -138,7 +138,7 @@ void QuasiCrystalsScene::SetUniformPhysicalWithEdges(Projection *projection, Qua
 
     shader->SetUniform<int>("n", window->NumberEdges());
     shader->SetUniform<glm::mat4>("pv", *projection);
-    shader->SetUniform<glm::mat4>("transform", quacry->TransformWorld());
+    shader->SetUniform<glm::mat4>("transform", quacry->Transform());
     shader->SetUniform<glm::mat4>("basis", quacry->GetBasis());
 }
 
