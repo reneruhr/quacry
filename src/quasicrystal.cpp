@@ -1,5 +1,5 @@
 #include "quasicrystal.h"
-namespace kipod::QuasiCrystals{
+namespace quacry{
 
 QuasiCrystal::QuasiCrystal(Basis basis, Window window, Sample sample)
     : PointSet(basis,sample),

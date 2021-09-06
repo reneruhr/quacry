@@ -1,7 +1,8 @@
 #include "quasicrystals_scene.h"
 #include "quasicrystals_physical_window.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
+using namespace kipod;
 
 void QuasiCrystalsScene::ProcessKeys(KeyPressedEvent &event)
 {

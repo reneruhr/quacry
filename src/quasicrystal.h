@@ -2,7 +2,7 @@
 #include "quasicrystals_pointset.h"
 #include "../kipod/src/modules/shapes/shape.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
 using Window = kipod::Shapes::Shape;
 
 class QuasiCrystal : public PointSet

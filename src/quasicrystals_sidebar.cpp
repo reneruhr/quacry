@@ -3,7 +3,7 @@
 #include "math/minkowski_embedding.h"
 #include "quasicrystals_examples.h"
 #include "quasicrystals_guimathcontrol.h"
-namespace kipod::QuasiCrystals{
+namespace quacry{
 
 void QuasiCrystalsSidebar::SideBarContent()
 {

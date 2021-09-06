@@ -1,7 +1,7 @@
 #pragma once
 #include "kipod.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
 class QuasiCrystalsConsole :
         public kipod::Console{
         friend class QuasiCrystalsModule;

@@ -1,7 +1,7 @@
 #pragma once
 #include "kipod.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
 class PhysicalWindow
 {
         std::vector< float > window_size_;

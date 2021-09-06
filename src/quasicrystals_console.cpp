@@ -2,7 +2,7 @@
 #include "quasicrystals_scene.h"
 #include "quasicrystals_guimathcontrol.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
 
 void QuasiCrystalsConsole::ConsoleContent(){
     SL2Action();

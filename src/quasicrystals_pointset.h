@@ -1,7 +1,7 @@
 #include "kipod.h"
 #include "math/lattice.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
 using Vector = glm::vec4;
 using Basis = glm::mat4;
 using Sample = std::vector< int >;

@@ -2,7 +2,7 @@
 #include "quasicrystals_sidebar.h"
 #include "quasicrystals_scene.h"
 #include "quasicrystals_console.h"
-namespace kipod::QuasiCrystals{
+namespace quacry{
 
 QuasiCrystalsModule::QuasiCrystalsModule(std::string name, int width, int height) : Module(name)
 {

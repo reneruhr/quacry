@@ -12,7 +12,7 @@ int main( int argc, char **argv )
     int width = 512, height = 384;
     kipod::Application kipod(width, height);
     kipod.Init();
-    kipod.Add(kipod::QuasiCrystals::QuasiCrystalsModule("Quasi-Crystals", width,height));
+    kipod.Add(quacry::QuasiCrystalsModule("Quasi-Crystals", width,height));
     kipod.Run();
     kipod.ShutDown();
 

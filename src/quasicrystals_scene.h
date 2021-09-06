@@ -2,7 +2,8 @@
 #include "kipod.h"
 #include "quasicrystal.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
+using namespace kipod;
 
 class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, public kipod::RenderScene{
         friend class QuasiCrystalsSidebar;

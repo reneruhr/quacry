@@ -1,6 +1,6 @@
 #include "quasicrystals_pointset.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
 
 void PointSet::Init()
 {
@@ -32,7 +32,7 @@ void PointSet::BaseChange(Basis new_basis)
 void PointSet::UpdatePoints()
 {
     unsigned long buffer_size = size(sample_) * sizeof(Vector);
-    static_cast<GLRenderLayout*>(Layout())->vbo_->Add(0, buffer_size, (void*)sample_.data());
+    static_cast<kipod::GLRenderLayout*>(Layout())->vbo_->Add(0, buffer_size, (void*)sample_.data());
     lattice_data_->size = size(sample_);
 }
 }

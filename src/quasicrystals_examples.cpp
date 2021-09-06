@@ -1,7 +1,7 @@
 #include "quasicrystals_examples.h"
 #include "math/minkowski_embedding.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
 
     QuasiCrystal AmmannBeenker()
     {

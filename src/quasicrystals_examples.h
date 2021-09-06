@@ -1,7 +1,7 @@
 #pragma once
 #include "quasicrystal.h"
 
-namespace kipod::QuasiCrystals{
+namespace quacry{
 
     QuasiCrystal AmmannBeenker();
 
