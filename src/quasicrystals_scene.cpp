@@ -25,10 +25,11 @@ void QuasiCrystalsScene::SetupLayout(QuasiCrystal *quacry)
 
 void QuasiCrystalsScene::SetupShaders()
 {
-    shaders_.insert({"Quasi Physical", std::make_shared<kipod::Shader>("shaders/inside_polygon.vert.glsl", "shaders/points.frag.glsl")});
+//    shaders_.insert({"Quasi Physical", std::make_shared<kipod::Shader>("shaders/inside_polygon.vert.glsl", "shaders/points.frag.glsl")});
+    shaders_.insert({"Quasi Physical", std::make_shared<kipod::Shader>("shaders/points.vert.glsl", "shaders/points.frag.glsl", "shaders/points.geom.glsl")});
     shaders_.insert({"Quasi Internal", std::make_shared<kipod::Shader>("shaders/inside_polygon_window.vert.glsl", "shaders/points.frag.glsl")});
 
-    shaders_.insert({"Quasi Physical with Edges", std::make_shared<kipod::Shader>("shaders/inside_polygon_with_edges.vert.glsl", "shaders/points.frag.glsl", "shaders/edges.geom.glsl")});
+    shaders_.insert({"Quasi Physical with Edges", std::make_shared<kipod::Shader>("shaders/points.vert.glsl", "shaders/points.frag.glsl", "shaders/edges.geom.glsl")});
 
     shaders_["Quasi Physical with Edges"]->AttachUniform<glm::mat4>("pv");
     shaders_["Quasi Physical with Edges"]->AttachUniform<glm::mat4>("transform");
