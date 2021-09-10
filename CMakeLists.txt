@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 
-#project(kipod LANGUAGES CXX)
 project(quacry)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,7 +8,8 @@ add_subdirectory(kipod)
 set(SPDLOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/kipod/external_libs/spdlog/include/)
 include_directories(${SPDLOG_DIR})
 include_directories(kipod/include)
-include_directories(kipod/siegel2021/include)
+include_directories(kipod/external_libs/)
+
 add_executable(quacry
   src/main.cpp
 

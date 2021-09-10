@@ -1,6 +1,5 @@
 #include "quasi_math.h"
 
-
 using std::cout;
 using std::endl;
 
@@ -97,7 +96,6 @@ void cReduce(const Matrix4f& A, Matrix4f& Ared, float c){
 		}
 	}
 }
-
 
 void WeakReduction(const Matrix4f& A, Matrix4f& Ared){
 	Ared = A;

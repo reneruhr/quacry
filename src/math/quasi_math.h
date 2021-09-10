@@ -1,8 +1,4 @@
-
-#ifndef QUASI_MATH_H
-#define QUASI_MATH_H
-
-#include <GL/glew.h>
+#pragma once
 
 #include <cmath>
 
@@ -59,4 +55,3 @@ int quo(const Vector4f& a, const Vector4f& b);
 Vector4f rem(const Vector4f& a, const Vector4f& b);
 
 //}
-#endif
