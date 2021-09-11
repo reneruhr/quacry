@@ -18,10 +18,10 @@ typedef vector<Vec2> Vectors2;
 void DrawColumnMatrix4(const Mat4& m);
 void DrawRowMatrix4(const Mat4& m);
 
-struct SampleSize
+struct SampleSize4
         {
             int x,y,z,w;
-            SampleSize(int x,int y,int z,int w):x(x),y(y),z(z),w(w){}
+            SampleSize4(int x,int y,int z,int w):x(x),y(y),z(z),w(w){}
         };
 
 enum mode {
@@ -45,4 +45,4 @@ void mat4selectable(string* b, std::array<int, 16> &selected);
 void SetMat2(float* f);
 void SL4matrix(Mat4& m);
 
-void verify4i(SampleSize &sampleSize, mode &currentMode);
+void verify4i(SampleSize4 &sampleSize, mode &currentMode);

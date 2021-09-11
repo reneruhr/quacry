@@ -1,18 +1,40 @@
 #include "quasicrystal.h"
-namespace quacry{
+#include "math/LLL.h"
 
-QuasiCrystal::QuasiCrystal(Basis basis, Window window, Sample sample)
-    : PointSet(basis,sample),
-      window_(std::make_unique<Window>(window))
+namespace quacry{
+using Mat4 = glm::mat4;
+
+
+QuasiCrystal::QuasiCrystal(Basis basis, Window window, SampleSize sample)
+    : Lattice(basis), PointSet(sample),
+      window_(std::make_unique<Window>(window)),
+    view_data_(std::make_unique<ViewData>())
 {
     Init();
+}
+
+QuasiCrystal::QuasiCrystal(Basis basis, Window window)
+    : Lattice(basis), PointSet(),
+      window_(std::make_unique<Window>(window)),
+    view_data_(std::make_unique<ViewData>())
+{
+    Init();
+	g_ = basis;
 }
 
 void QuasiCrystal::Init()
 {
     PointSet::Init();
     window_->Init();
+    view_data_->size = size(sample_);
 }
 
-
+void QuasiCrystal::ApplyLLL()
+{
+   using namespace latred;
+   g_ = Transform() * GetBasis();
+   Eigen::Map<Eigen::Matrix4f> mf(glm::value_ptr(g_),4,4); 
+   Eigen::Matrix4f reduced_trans = LLL(mf);
+   g_ = glm::make_mat4(reduced_trans.data());
+}
 }

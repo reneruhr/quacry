@@ -9,7 +9,7 @@ namespace quacry{
 
         Window octagon = kipod::Shapes::Shape( kipod::Shapes::Octagon(sqrt(2)) );
 
-        Sample sample_range = {-20,20,-20,20,-10,10,-10,10};
+        SampleSize sample_range = {-20,20,-20,20,-10,10,-10,10};
 
         QuasiCrystal quacryOctagon = {square_root_matrix, octagon, sample_range};
 

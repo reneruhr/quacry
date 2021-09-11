@@ -221,21 +221,21 @@ void SetMat2(float* f)
         ImGui::Separator();
 }
 
-void verify4i(SampleSize &sampleSize, mode &currentMode)
+void verify4i(SampleSize4 &sampleSize, mode &currentMode)
 {
      ImGui::Text("Size");
         ImGui::InputInt("x", &sampleSize.x);
         ImGui::InputInt("y", &sampleSize.y);
         ImGui::InputInt("z", &sampleSize.z);
         ImGui::InputInt("w", &sampleSize.w);
-        static int clickedSampleSize = 0;
+        static int clickedSampleSize4 = 0;
         if (ImGui::Button("Get new sample."))
-            clickedSampleSize++;
-        if (clickedSampleSize)
+            clickedSampleSize4++;
+        if (clickedSampleSize4)
         {
             currentMode = NEW_SAMPLE;
             ImGui::SameLine();  ImGui::Text("calculating...");
-            clickedSampleSize = 0;
+            clickedSampleSize4 = 0;
         }
 }
 

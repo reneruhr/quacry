@@ -39,8 +39,8 @@ void main()
  // pv_point.zw = vec2(0,1);
 	if(InsideShape(trans_point.zw)){
     for(int i = 0; i<4; ++i){
-        vec4 left = transform*(point+basis[i]);
-        vec4 right = transform*(point-basis[i]);
+        vec4 left = transform*point+transform[i];
+        vec4 right = transform*point-transform[i];
         vert_color = vec4(1);
         if(InsideShape(left.zw)){
                 gl_Position = pv_point;

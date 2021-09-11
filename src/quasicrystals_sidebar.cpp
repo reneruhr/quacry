@@ -74,7 +74,7 @@ void QuasiCrystalsSidebar::LatticeControl()
            quacry->local_->Replace(scale_matrix);
         }
         ImGui::Text("Basis:");
-        DrawColumnMatrix4(quacry->basis_);
+        DrawColumnMatrix4(quacry->GetBasis());
         ImGui::Text("Current Transformation:");
         DrawColumnMatrix4(quacry->Transform());
 
@@ -138,18 +138,18 @@ void QuasiCrystalsSidebar::WindowControl()
     }
 }
 
-void SetOutsideVisibility(LatticeData* data, float alpha)
+void SetOutsideVisibility(ViewData* data, float alpha)
 {
     data->alpha_ = alpha;
 }
 
-void SetColorZW(LatticeData* data, float* z, float* w)
+void SetColorZW(ViewData* data, float* z, float* w)
 {
     data->color_z_ = glm::make_vec4(z);
     data->color_w_ = glm::make_vec4(w);
 }
 
-void SetPointSize(LatticeData* data, float size)
+void SetPointSize(ViewData* data, float size)
 {
     data->point_size_ = size;
 }
@@ -162,7 +162,7 @@ void QuasiCrystalsSidebar::ViewOptions()
 
     if ( quacry){ // ImGui::TreeNode("Looks") &&
         auto window = quacry->window_.get();
-        auto data = quacry->lattice_data_.get();
+        auto data = quacry->view_data_.get();
 
         static float point_size = data->point_size_;
         static float point_size_window = data->point_size_window_;
