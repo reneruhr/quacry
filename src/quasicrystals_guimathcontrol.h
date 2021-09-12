@@ -38,11 +38,4 @@ void DrawEmbeddings(std::array<int, 16> &selected, SL2Embedding &currEmbedding);
 void EmbeddingsView(std::array<int, 16> &selected);
 void MatrixWalkCandidate(MatrixWalk&);
 
-void matrix(float* f, int size);
-void SetMat4(Mat4& m);
-void matrix4i(int* f);
-void mat4selectable(string* b, std::array<int, 16> &selected);
-void SetMat2(float* f);
-void SL4matrix(Mat4& m);
 
-void verify4i(SampleSize4 &sampleSize, mode &currentMode);

@@ -28,18 +28,18 @@ void TopLeftCorner(Mat4& m4, const Mat2& m)
 
 void BottomLeftCorner(Mat4& m4, const Mat2& m)
 {
-    m4[0+2][0] = m[0][0];
-    m4[1+2][0] = m[1][0];
-    m4[0+2][1] = m[0][1];
-    m4[1+2][1] = m[1][1];
-}
-
-void TopRightCorner(Mat4& m4, const Mat2& m)
-{
     m4[0][0+2] = m[0][0];
     m4[1][0+2] = m[1][0];
     m4[0][1+2] = m[0][1];
     m4[1][1+2] = m[1][1];
+}
+
+void TopRightCorner(Mat4& m4, const Mat2& m)
+{
+    m4[0+2][0] = m[0][0];
+    m4[1+2][0] = m[1][0];
+    m4[0+2][1] = m[0][1];
+    m4[1+2][1] = m[1][1];
 }
 
 void BottomRightCorner(Mat4& m4, const Mat2& m)
@@ -84,11 +84,10 @@ Mat4 SL2ToSL4(SL2InSL4 m2){
     TopLeftCorner(m, SL2::FromType(type, val));
     std::vector<int> perm_vec = {0,1,2,3};
 
-    if (embed == OUTER) perm_vec = std::vector<int>{0,3,2,1};
-    else if (embed == BOTTOM_RIGHT) perm_vec = std::vector<int>{2,3,0,1};
+    if (embed == OUTER) perm_vec = std::vector<int>{0,2,3,1};
     else if (embed == XZ) perm_vec = std::vector<int>{0,2,1,3};
-    else if (embed == YZ) perm_vec = std::vector<int>{1,2,0,3};
-    else if (embed == YW) perm_vec = std::vector<int>{1,3,2,0};
+    else if (embed == YZ) perm_vec = std::vector<int>{2,0,1,3};
+    else if (embed == YW) perm_vec = std::vector<int>{2,0,3,1};
 
     Mat4 P = PermutationMatrix(perm_vec);
     m = P*m*Transpose(P);

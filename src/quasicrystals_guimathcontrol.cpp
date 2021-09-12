@@ -90,7 +90,7 @@ bool DrawSL2Matrix(float& s, SL2Type SL2Type, int id=1)
             ImGui::Text("%.1f", 0.0);
             ImGui::SameLine();
             ImGui::Text("%.1f", exp(-s));
-            if(ImGui::SliderFloat("##float_dilate", &s, -5.0, 5.0)) return true;
+            if(ImGui::SliderFloat("##float_dilate", &s, -10.0, 10.0)) return true;
             break;
 
         case(SHEAR_U):
@@ -132,46 +132,6 @@ bool DrawSL2Matrix(float& s, SL2Type SL2Type, int id=1)
     return false;
 }
 
-void SetMat4(Mat4& m){
-        ImGui::Text("Basis:");
-        ImGui::Columns(4, "mycolumns"); // 4-ways, with border
-        ImGui::Separator();
-
-        for (int i = 0; i < 4; i++){
-            for(int j =0; j <4; j++){
-                ImGui::Text("%.1f", m[i][j]);
-                ImGui::NextColumn();
-            }
-        }
-        ImGui::Columns(1);
-}
-
-void matrix4i(int* f){
-        ImGui::Text("Basis:");
-        ImGui::Columns(4, "mycolumns"); // 4-ways, with border
-        ImGui::Separator();
-
-        for (int i = 0; i < 4; i++) {
-            for(int j =0; j <4; j++){
-                ImGui::Text("%i", *(f+(4*i+j)));
-                ImGui::NextColumn();
-            }
-        }
-        ImGui::Columns(1);
-}
-
-void mat4selectable(string* b, std::array<int, 16> &selected){
-        ImGui::Separator();
-        for (int i = 0; i < 4 * 4; i++) {
-            ImGui::PushID(i);
-            if (ImGui::Selectable(&b[i][0], selected[i] != 0, 0, ImVec2(50, 50))) {
-                selected[i] = !selected[i];
-            }
-            if ((i % 4) < 3) ImGui::SameLine();
-            ImGui::PopID();
-        }
-     }
-
 void EmbeddingsView(std::array<int, 16> &selected){
     ImGui::Separator();
     for (int i = 0; i < 4 * 4; i++){
@@ -204,60 +164,6 @@ void DrawEmbeddings(std::array<int, 16> &selected, SL2Embedding &embedding)
     ImGui::RadioButton("y-w", &e, 7);
     embedding = static_cast<SL2Embedding>(e);
     EmbeddingMapReverse(selected, embedding);
-}
-
-void SetMat2(float* f)
-{
-      ImGui::Separator();
-      for (int i = 0; i < 2; i++)
-        {
-            for(int j =0; j <2; j++){
-
-                ImGui::Text("%.1f", *(f+(2*i+j)));
-                ImGui::NextColumn();
-            }
-        }
-        ImGui::Columns(1);
-        ImGui::Separator();
-}
-
-void verify4i(SampleSize4 &sampleSize, mode &currentMode)
-{
-     ImGui::Text("Size");
-        ImGui::InputInt("x", &sampleSize.x);
-        ImGui::InputInt("y", &sampleSize.y);
-        ImGui::InputInt("z", &sampleSize.z);
-        ImGui::InputInt("w", &sampleSize.w);
-        static int clickedSampleSize4 = 0;
-        if (ImGui::Button("Get new sample."))
-            clickedSampleSize4++;
-        if (clickedSampleSize4)
-        {
-            currentMode = NEW_SAMPLE;
-            ImGui::SameLine();  ImGui::Text("calculating...");
-            clickedSampleSize4 = 0;
-        }
-}
-
-void matrix(float* f, int size)
-{
-    for (int i = 0; i < size; i++){
-            for(int j =0; j <size; j++){
-                ImGui::Text("%.1f", *(f+(size*i+j)));
-                if(j<size-1) ImGui::SameLine();
-            }
-        }
-}
-
-void SL4matrix(Mat4& m)
-{
-    static float* f = &m[0][0];
-    for (int i = 0; i < 4; i++){
-            for(int j =0; j <4; j++){
-                ImGui::Text("%.1f", *(f+(4*i+j)));
-                if(j<3) ImGui::SameLine();
-            }
-        }
 }
 
 void SL2Control(Mat4& current_transform, MatrixWalk &SL4walk, SL2Embedding embedding)
