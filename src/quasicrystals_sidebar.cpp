@@ -43,7 +43,7 @@ void QuasiCrystalsSidebar::QuasiCrystalsList()
         for (int n = 0; n <  (int)quacries.size(); n++, ++current_quacry)
         {
             char buf[32];
-            sprintf(buf, "Quasicrystal %d", n);
+            sprintf(buf, "%s", quacries[n]->name_.c_str());
             if (ImGui::Selectable(buf, selected_quacry == n)){
                 selected_quacry = n;
                 scene->ActiveQuasiCrystal(current_quacry->get());
@@ -119,21 +119,20 @@ void QuasiCrystalsSidebar::WindowControl()
                window->UpdatedTransformedVertices();
                window->UpdateShape();
             }
-
-           if(ImGui::Button("Ammann–Beenker Sublattice"))
-               quacry->BaseChange(transpose(MinkowskiEmbedding(2).Embedding(
-                           {{1,0},{0,0}},
-                           {{0,1},{0,0}},
-                           {{0,0},{2,0}},
-                           {{0,0},{0,1}})));
-           if(ImGui::Button("Full sqrt(2) Lattice"))
-               quacry->BaseChange(transpose(MinkowskiEmbedding(2).Embedding(
-                           {{1,0},{0,0}},
-                           {{0,1},{0,0}},
-                           {{0,0},{1,0}},
-                           {{0,0},{0,1}})));
-
-    // ImGui::TreePop();
+            static int selected_pattern = quacry->patterns_.size();
+            for (auto b = std::begin(quacry->patterns_), 
+                 c = std::begin(quacry->patterns_),
+                 e = std::end(quacry->patterns_); b<=e;++b)
+            {
+                int n = std::distance(c,b);
+                char buf[32];
+                if(b!=e) sprintf(buf, "Pattern %d", n);
+                else sprintf(buf, "No Pattern");
+                if (ImGui::Selectable(buf, selected_pattern == n)){
+                    selected_pattern = n;
+                    quacry->active_pattern_ = b==e ? nullptr : (*b).get();
+                }
+            }
     }
     }
 }

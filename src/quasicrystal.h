@@ -12,13 +12,17 @@ class QuasiCrystal : public Lattice<Basis>, public PointSet
 public:    
     QuasiCrystal(Basis basis, Window window);
     QuasiCrystal(Basis basis, Window window, SampleSize sample_size);
+    QuasiCrystal(Basis basis, Window window, std::string name, SampleSize sample_size);
 
     std::unique_ptr<Window> window_;
     std::unique_ptr<ViewData> view_data_= nullptr;
+    std::vector<std::unique_ptr<Window>> patterns_;
 
+    Window* active_pattern_ = nullptr;
     virtual void Init() override;
 
     void ApplyLLL();
+    std::string name_;
     Basis g_;
 };
 

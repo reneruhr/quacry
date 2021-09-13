@@ -90,11 +90,20 @@ void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, QuasiCrystal
 {
     auto data = quacry->view_data_.get();
     auto window = quacry->window_.get();
+    auto pattern = quacry->active_pattern_;
 
     auto shader = shaders_["Quasi Physical"];
 
     GLuint shape = glGetUniformLocation(*shader, "shape");
     glUniform2fv(shape, window->NumberEdges(), &window->transformed_vertices_[0][0]);
+
+    if(pattern) {
+        shader->SetUniform<int>("n_pattern", pattern->NumberEdges());
+        GLuint pattern_id = glGetUniformLocation(*shader, "pattern");
+        glUniform2fv(pattern_id , pattern->NumberEdges(), &pattern->transformed_vertices_[0][0]);
+    }else
+        shader->SetUniform<int>("n_pattern", 0);
+
 
     shader->SetUniform<int>("n", window->NumberEdges());
     shader->SetUniform<glm::mat4>("pv", *projection);
@@ -105,8 +114,8 @@ void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, QuasiCrystal
     shader->SetUniform<glm::vec4>("color_z", data->color_z_);
     shader->SetUniform<glm::vec4>("color_w", data->color_w_);
     glm::vec4 bound;
-    auto z_mima = std::minmax_element(window->transformed_vertices_.begin(), window->transformed_vertices_.end(), [](vec2 v, vec2 w){ return v.x < w.x; });
-    auto w_mima = std::minmax_element(window->transformed_vertices_.begin(), window->transformed_vertices_.end(), [](vec2 v, vec2 w){ return v.y < w.y; });
+    auto z_mima = std::minmax_element(window->transformed_vertices_.begin(), window->transformed_vertices_.end(), [](auto v, auto w){ return v.x < w.x; });
+    auto w_mima = std::minmax_element(window->transformed_vertices_.begin(), window->transformed_vertices_.end(), [](auto v, auto w){ return v.y < w.y; });
     bound.x = -(*z_mima.first).x;
     bound.y = -(*w_mima.first).y;
     bound.z = (*z_mima.second).x + bound.x;

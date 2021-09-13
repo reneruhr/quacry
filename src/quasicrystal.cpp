@@ -4,11 +4,20 @@
 namespace quacry{
 using Mat4 = glm::mat4;
 
+QuasiCrystal::QuasiCrystal(Basis basis, Window window, std::string name, SampleSize sample)
+    : Lattice(basis), PointSet(sample),
+      window_(std::make_unique<Window>(window)),
+    view_data_(std::make_unique<ViewData>()),
+    name_(name), g_(basis)
+{
+    Init();
+}
 
 QuasiCrystal::QuasiCrystal(Basis basis, Window window, SampleSize sample)
     : Lattice(basis), PointSet(sample),
       window_(std::make_unique<Window>(window)),
-    view_data_(std::make_unique<ViewData>())
+    view_data_(std::make_unique<ViewData>()),
+    g_(basis)
 {
     Init();
 }
@@ -16,10 +25,10 @@ QuasiCrystal::QuasiCrystal(Basis basis, Window window, SampleSize sample)
 QuasiCrystal::QuasiCrystal(Basis basis, Window window)
     : Lattice(basis), PointSet(),
       window_(std::make_unique<Window>(window)),
-    view_data_(std::make_unique<ViewData>())
+    view_data_(std::make_unique<ViewData>()),
+    g_(basis)
 {
     Init();
-	g_ = basis;
 }
 
 void QuasiCrystal::Init()

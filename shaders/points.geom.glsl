@@ -4,7 +4,9 @@ layout(points) in;
 layout(points, max_vertices = 1) out;
 
 uniform vec2[8] shape;
+uniform vec2[8] pattern;
 uniform int n;
+uniform int n_pattern;
 
 uniform mat4 transform;
 uniform mat4 pv;
@@ -31,6 +33,15 @@ bool InsideShape(in vec2 p)
 	return true;
 }
 
+bool InsidePattern(in vec2 p)
+{
+  if(n_pattern == 0) return true;
+	for(int i=0; i<n_pattern; i++){
+		if(Wedge( pattern[(i+1)%n]-pattern[i], p-pattern[i] )  < 0 ) return false;
+	}
+	return true;
+}
+
 vec4 Project(in vec4 v)
 {
    v.zw = vec2(0,1);
@@ -49,9 +60,14 @@ void main()
   vec4 point = transform * in_point;
   vert_color =  vec4(0.0f, 0.0f, 1.0f, alpha);
   if(InsideShape(point.zw)){
-    vert_color.w = 1;
-    vert_color.xy = point.zw;
-    normalize_zw(vert_color.xy, bound_zw);
+    if(n_pattern == 0){
+      vert_color.w = 1;
+      vert_color.xy = point.zw;
+      normalize_zw(vert_color.xy, bound_zw);
+    } else if(InsidePattern(point.zw)){
+        vert_color = vec4(1); 
+    } else
+       vert_color = vec4(0.3,0.2,0.4,1);
   }
 
   gl_Position = pv * Project(point); 
