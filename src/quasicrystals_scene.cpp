@@ -6,6 +6,28 @@ namespace quacry{
 void QuasiCrystalsScene::ProcessKeys(KeyPressedEvent &event)
 {
 
+        float stepsize = 1.0f;
+        auto key = event.GetKeyCode();
+        auto mod = event.GetMod();
+    
+        if(key == Key::Left && mod == Mod::None){
+                    ActiveProjection()->Move(kipod::RenderCamera::Movement::LEFT, stepsize);
+                }
+        else if(key == Key::Right && mod == Mod::None){
+                    ActiveProjection()->Move(kipod::RenderCamera::Movement::RIGHT, stepsize);
+                }
+        else if(key == Key::PageUp && mod == Mod::None){
+                    ActiveProjection()->ScaleOrthogonalCamera( stepsize);
+                }
+        else if(key == Key::PageDown && mod == Mod::None){
+                    ActiveProjection()->ScaleOrthogonalCamera( -stepsize);
+                }
+        else if(key == Key::Up && mod == Mod::None){
+                    ActiveProjection()->Move(kipod::RenderCamera::Movement::UP, stepsize);
+                }
+        else if(key == Key::Down && mod == Mod::None){
+                    ActiveProjection()->Move(kipod::RenderCamera::Movement::DOWN, stepsize);
+                }
 }
 
 void QuasiCrystalsScene::ProcessMouseButtons(MouseButtonEvent &event)
@@ -164,12 +186,12 @@ QuasiCrystalsScene::QuasiCrystalsScene(int width, int height) : RenderScene(widt
 
 void QuasiCrystalsScene::Signup()
 {
-
+    kipod::Events::Signup(this, kipod::EventCategoryKeyboard); LOG_CATEGORY_NAME(kipod::EventCategoryKeyboard);
 }
 
 void QuasiCrystalsScene::Receive(std::shared_ptr<Event> event)
 {
-
+    Process<kipod::KeyPressedEvent>(event, BIND_EVENT_FN(QuasiCrystalsScene::ProcessKeys));
 }
 
 void QuasiCrystalsScene::Setup()
@@ -178,14 +200,12 @@ void QuasiCrystalsScene::Setup()
     SetupShaders();
 
     PhysicalWindow pw;
-    projections_.emplace_back(std::make_unique<Projection>(
-                                  pw.Left(),
-                                  pw.Right(),
-                                  pw.Bottom(),
-                                  pw.Top(),
-                                  pw.Near(),
-                                  pw.Far()));
+    projections_.emplace_back(std::make_unique<Projection>( pw.Left(), pw.Right(), pw.Bottom(), pw.Top(), pw.Near(), pw.Far()));
     ActiveProjection(projections_.back().get());
+
+    PhysicalWindow int_wind{{-3,3,-3,3,-5,5,0,0}};
+    internal_projection_ = 
+    std::make_unique<Projection>( int_wind.Left(), int_wind.Right(), int_wind.Bottom(), int_wind.Top(), int_wind.Near(), int_wind.Far());
 
     glEnable(GL_PROGRAM_POINT_SIZE);
     LOG_INFO("Quasicrystals scene initialized.");
@@ -200,7 +220,8 @@ void QuasiCrystalsScene::Draw()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-	quacry->ApplyLLL();
+        quacry->ApplyLLL();
+        
         shaders_["Quasi Physical"]->Use();
         SetUniformPhysical(ActiveProjection(), quacry);
         quacry->Draw();
@@ -220,7 +241,7 @@ void QuasiCrystalsScene::Draw()
         quacry->window_->Draw();
 
         shaders_["Quasi Internal"]->Use();
-        SetUniformInternal(ActiveProjection(), quacry);
+        SetUniformInternal(internal_projection_.get(), quacry);
         quacry->Draw();
 
         glDisable(GL_DEPTH_TEST);

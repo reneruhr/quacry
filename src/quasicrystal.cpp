@@ -36,6 +36,9 @@ void QuasiCrystal::Init()
     PointSet::Init();
     window_->Init();
     view_data_->size = size(sample_);
+    window_->world_->Replace(glm::mat2(1.));
+    window_->UpdatedTransformedVertices();
+    window_->UpdateShape();
 }
 
 void QuasiCrystal::ApplyLLL()

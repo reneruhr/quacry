@@ -78,24 +78,6 @@ void QuasiCrystalsSidebar::LatticeControl()
         ImGui::Text("Current Transformation:");
         DrawColumnMatrix4(quacry->Transform());
 
-        /*
-        if (ImGui::TreeNode("View:")){
-            static int selected_view = -1;
-            for (int n = 0; n <  scene->numberOfCameras(); n++){
-                char buf[64];
-                if(n==0) sprintf(buf, "Perspective Projection to XYZ (close up) ");
-                else if(n==1) sprintf(buf, "Perspective Projection to XYZ (far away)");
-                else if(n==2) sprintf(buf, "Cut and Project");
-
-                if (ImGui::Selectable(buf, selected_view == n)){
-                    selected_view = n;
-                    scene->setActiveCamera(selected_view);
-                }
-            }
-            ImGui::TreePop();
-        }// View
-        */
-
     } // quacry
     } //Lattice control
 }
@@ -112,7 +94,7 @@ void QuasiCrystalsSidebar::WindowControl()
             auto window = quacry->window_.get();
 
             static float window_scale=1;
-            ImGui::Text("Scale Window (uniformly zw)");
+            ImGui::Text("Scale View on Window");
             if (ImGui::SliderFloat("##window_scale", &window_scale, 0.2, 5.0f)){
                window_matrix = glm::mat2(window_scale);
                window->world_->Replace(window_matrix);
@@ -122,7 +104,7 @@ void QuasiCrystalsSidebar::WindowControl()
             static int selected_pattern = quacry->patterns_.size();
             for (auto b = std::begin(quacry->patterns_), 
                  c = std::begin(quacry->patterns_),
-                 e = std::end(quacry->patterns_); b<=e;++b)
+                 e = std::end(quacry->patterns_); b<=e; ++b)
             {
                 int n = std::distance(c,b);
                 char buf[32];
@@ -186,17 +168,25 @@ void QuasiCrystalsSidebar::ViewOptions()
         if (ImGui::SliderFloat("##VisibilityScale", &visibility_outside_window, 0.0, 1.0f)){
            SetOutsideVisibility(data, visibility_outside_window);
         }
-/*
-        static ImVec4 zColor = ImVec4(data->color_z_[0],data->color_z_[1],data->color_z_[2],data->color_z_[3]);
-        static ImVec4 wColor = ImVec4(data->color_w_[0],data->color_w_[1],data->color_w_[2],data->color_w_[3]);
-        ImGui::Text("Give the z/w-coordinates a colour!");
-        if (ImGui::ColorEdit4("z##zColor", (float*)&zColor, 0)){
-           SetColorZW(data, (float*)&zColor, (float*)&wColor);
-        }
-        if (ImGui::ColorEdit4("w##wColor", (float*)&wColor, 0)){
-           SetColorZW(data, (float*)&zColor, (float*)&wColor);
-        }
-        */
+
+        if (ImGui::TreeNode("Projections:")){
+            auto projection = scene->ActiveProjection();
+            static int selected_view = 0;
+            for (int n = 0; n <  scene->NumberOfCameras(); n++){
+                char buf[64];
+                sprintf(buf, "Projection %d", n);
+
+                if (ImGui::Selectable(buf, selected_view == n)){
+                    selected_view = n;
+                    scene->ActiveProjection(scene->projections_[selected_view].get());
+                }
+            }
+            ImGui::InputFloat2("##camerapos", &projection->Eye()[0], "%.1f");
+            kipod::HoverInfo("Controls", "Keyboard controls only work if the 'Viewport' window is active. "
+                             "Click inside to active it.\n"
+                             "Move Projection with Arrow & Page Down/Up Keys.\n");
+            ImGui::TreePop();
+        }// View
     }
     }
 }

@@ -49,6 +49,7 @@ protected:
 
         QuasiCrystalContainer quacries_;
         ProjectionContainer& projections_ = RenderScene::cameras_;
+        std::unique_ptr<Projection> internal_projection_;
 
         void AddQuasiCrystal(QuasiCrystal&&);
         QuasiCrystal* ActiveQuasiCrystal();

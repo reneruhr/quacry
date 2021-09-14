@@ -39,6 +39,6 @@ void main()
 		point.zw = vec2(-1., 1.0f);
 	}
 
-	gl_Position = shape_transform*point;
+	gl_Position = pv*shape_transform*point;
 	gl_PointSize = point_size;
 }
