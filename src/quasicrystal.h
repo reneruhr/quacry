@@ -33,9 +33,13 @@ struct ViewData{
     float alpha_ = 0.001f;
     Vec4 color_z_ = {1.0f, 0.0f, 0.00f, 0.3f};
     Vec4 color_w_ = {0.0f, 1.0f, 0.00f, 0.3f};
+    Vec4 color_window_ = Vec4(139./255,69./255,19./255,1);
+    Vec4 color_pattern_ = Vec4(1.0f,0.8f,0.6f,1.0f);
 
     float depth_ = -0.7f;
     bool edges_ = false;
+    bool window_shape_ = false;
+    bool pattern_shape_ = false;
 };
 
 }

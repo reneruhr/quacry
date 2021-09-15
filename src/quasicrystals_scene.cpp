@@ -63,6 +63,7 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_["Quasi Physical"]->AttachUniform<glm::mat4>("transform");
     shaders_["Quasi Physical"]->AttachUniform<glm::vec2>("shape");
     shaders_["Quasi Physical"]->AttachUniform<int>("n");
+    shaders_["Quasi Physical"]->AttachUniform<int>("n_pattern");
     shaders_["Quasi Physical"]->AttachUniform<glm::mat4>("basis");
     shaders_["Quasi Physical"]->AttachUniform<float>("point_size");
     shaders_["Quasi Physical"]->AttachUniform<float>("alpha");
@@ -77,10 +78,17 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_["Quasi Internal"]->AttachUniform<float>("point_size");
     shaders_["Quasi Internal"]->AttachUniform<int>("n");
 
-    shaders_.insert({"Shape", std::make_shared<kipod::Shader>("kipod/shaders/shape.vert.glsl",   "kipod/shaders/shape.frag.glsl")});
+    shaders_.insert({"Shape", std::make_shared<kipod::Shader>("shaders/shape.vert.glsl", "shaders/shape.frag.glsl")});
     shaders_["Shape"]->AttachUniform<float>("depth");
     shaders_["Shape"]->AttachUniform<glm::mat4>("transform");
+    shaders_["Shape"]->AttachUniform<glm::mat4>("pv");
     shaders_["Shape"]->AttachUniform<glm::vec4>("color");
+
+    shaders_.insert({"Shape Pattern", std::make_shared<kipod::Shader>("shaders/shape.vert.glsl", "shaders/shape.frag.glsl")});
+    shaders_["Shape Pattern"]->AttachUniform<float>("depth");
+    shaders_["Shape Pattern"]->AttachUniform<glm::mat4>("transform");
+    shaders_["Shape Pattern"]->AttachUniform<glm::mat4>("pv");
+    shaders_["Shape Pattern"]->AttachUniform<glm::vec4>("color");
 }
 
 void QuasiCrystalsScene::SetupUniforms(Projection *projection, QuasiCrystal *quacry)
@@ -117,17 +125,16 @@ void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, QuasiCrystal
     auto shader = shaders_["Quasi Physical"];
 
     GLuint shape = glGetUniformLocation(*shader, "shape");
-    glUniform2fv(shape, window->NumberEdges(), &window->transformed_vertices_[0][0]);
+    glUniform2fv(shape, window->NumberVertices(), &window->transformed_vertices_[0][0]);
 
     if(pattern) {
-        shader->SetUniform<int>("n_pattern", pattern->NumberEdges());
+        shader->SetUniform<int>("n_pattern", pattern->NumberVertices());
         GLuint pattern_id = glGetUniformLocation(*shader, "pattern");
-        glUniform2fv(pattern_id , pattern->NumberEdges(), &pattern->transformed_vertices_[0][0]);
+        glUniform2fv(pattern_id , pattern->NumberVertices(), &pattern->transformed_vertices_[0][0]);
     }else
         shader->SetUniform<int>("n_pattern", 0);
 
-
-    shader->SetUniform<int>("n", window->NumberEdges());
+    shader->SetUniform<int>("n", window->NumberVertices());
     shader->SetUniform<glm::mat4>("pv", *projection);
     shader->SetUniform<glm::mat4>("transform", quacry->g_);
     shader->SetUniform<glm::mat4>("basis", quacry->GetBasis());
@@ -236,13 +243,20 @@ void QuasiCrystalsScene::Draw()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
 
-        shaders_["Shape"]->Use();
-        SetUniformWindow(quacry->window_.get());
-        quacry->window_->Draw();
-
         shaders_["Quasi Internal"]->Use();
         SetUniformInternal(internal_projection_.get(), quacry);
         quacry->Draw();
+
+        if( quacry->view_data_->window_shape_){
+            shaders_["Shape"]->Use();
+            SetUniformWindow(internal_projection_.get(), quacry);
+            quacry->window_->Draw();
+        }
+        if( quacry->view_data_->pattern_shape_ && quacry->active_pattern_){
+            shaders_["Shape Pattern"]->Use();
+            SetUniformPattern(internal_projection_.get(), quacry);
+            quacry->active_pattern_->Draw();
+        }
 
         glDisable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
@@ -282,8 +296,22 @@ void QuasiCrystalsScene::ActiveProjection(QuasiCrystalsScene::Projection* projec
     active_camera_= projection;
 }
 
-void QuasiCrystalsScene::SetUniformWindow(Window* window)
+void QuasiCrystalsScene::SetUniformWindow(Projection *projection, QuasiCrystal* quacry)
 {
+    auto window = quacry->window_.get();
     shaders_["Shape"]->SetUniform<glm::mat4>("transform", window->TransformWorld());
+    shaders_["Shape"]->SetUniform<glm::mat4>("pv", *projection);
+    shaders_["Shape"]->SetUniform<glm::vec4>("color", quacry->view_data_->color_window_);
+    shaders_["Shape"]->SetUniform<float>("depth", window->depth_);
+}
+
+void QuasiCrystalsScene::SetUniformPattern(Projection *projection, QuasiCrystal* quacry)
+{
+    auto pattern = quacry->active_pattern_;
+    auto window = quacry->window_.get();
+    shaders_["Shape Pattern"]->SetUniform<glm::mat4>("transform", window->TransformWorld());
+    shaders_["Shape Pattern"]->SetUniform<glm::mat4>("pv", *projection);
+    shaders_["Shape Pattern"]->SetUniform<glm::vec4>("color", quacry->view_data_->color_pattern_);
+    shaders_["Shape Pattern"]->SetUniform<float>("depth", pattern->depth_+0.1);
 }
 }

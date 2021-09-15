@@ -31,7 +31,8 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
         void SetUniformPhysical(Projection *projection, QuasiCrystal *quacry);
         void SetUniformPhysicalWithEdges(Projection *projection, QuasiCrystal *quacry);
         void SetUniformPhysicalBox(Projection *projection, QuasiCrystal *quacry);
-        void SetUniformWindow(Window *window);
+        void SetUniformWindow(Projection *projection, QuasiCrystal *quacry);
+        void SetUniformPattern(Projection *projection, QuasiCrystal *quacry);
 
 public:
         QuasiCrystalsScene(int width, int height);

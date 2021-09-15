@@ -36,7 +36,9 @@ void main()
 	if(InsideShape(point.zw)){
 		vert_color.w = 1; 
 		point.xy = point.zw;
-		point.zw = vec2(-1., 1.0f);
+		point.zw = vec2(0, 1.0f);
+	}else { 
+		point.zw = vec2( -10, 1); 
 	}
 
 	gl_Position = pv*shape_transform*point;
