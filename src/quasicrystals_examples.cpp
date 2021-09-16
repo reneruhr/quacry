@@ -62,6 +62,54 @@ auto Pattern2(float s) ->std::vector<Vec2>
     auto k = FindIntersection(c,h,b,e);
     return {b,i,j,k};
 }
+
+auto Pattern3(float s) -> std::vector<Vec2>
+{
+    auto o = Octagon(s);
+
+    auto i = FindIntersection(o.GetVertex(6), o.GetVertex(1), o.GetVertex(7), o.GetVertex(4));
+    auto j = FindIntersection(o.GetVertex(0), o.GetVertex(5), o.GetVertex(6), o.GetVertex(1));
+    auto k = FindIntersection(o.GetVertex(0), o.GetVertex(5), o.GetVertex(7), o.GetVertex(4));
+    auto toflip = i-j; toflip.x *= -1;
+    auto jk = j+toflip;
+    return {i,j,jk,k};
+}
+
+auto Pattern4(float s) -> std::vector<Vec2>
+{
+    auto o = Octagon(s);
+
+    auto i = FindIntersection(o.GetVertex(6), o.GetVertex(1), o.GetVertex(7), o.GetVertex(4));
+    auto j = FindIntersection(o.GetVertex(0), o.GetVertex(5), o.GetVertex(6), o.GetVertex(1));
+    auto k = FindIntersection(o.GetVertex(0), o.GetVertex(5), o.GetVertex(7), o.GetVertex(4));
+    auto toflip = i-j; toflip.x *= -1;
+    auto jk = j+toflip;
+
+    
+    auto c = FindIntersection(j,j+Vec2(-1,0), o.GetVertex(7)+Vec2(-s,0), o.GetVertex(6)+Vec2(-s,0));
+    auto d = FindIntersection(jk,k, o.GetVertex(7)+Vec2(-s,0), o.GetVertex(6)+Vec2(-s,0));
+    return {jk, j, c, d};
+}
+
+auto Pattern5(float s) -> std::vector<Vec2>
+{
+    auto prev = Pattern4(s);
+    auto a = prev[0];
+    auto b = prev[3];
+    auto toflip = b-a; toflip.y *= -1;
+    auto c = a + toflip;
+    return {a,b,c};
+}
+
+auto Pattern6(float s) -> std::vector<Vec2>
+{
+    double lambda = -1.+std::sqrt(2.);
+    auto o = Octagon(s);
+    auto vs = o.transformed_vertices_;
+    for(auto& v : vs) v*= lambda*lambda;
+    return vs;
+}
+
 auto AmmannBeenker() -> QuasiCrystal 
 {
     const float s = std::sqrt(2);
@@ -80,10 +128,20 @@ auto AmmannBeenker() -> QuasiCrystal
     auto vs2 = Pattern2(s); auto polygon2 = Polygon{vs2,AvgPoint(vs2)};
     AmmBee.patterns_.emplace_back( std::make_unique<Window>(Shape(polygon2)));
 
+    auto vs3 = Pattern3(s); auto polygon3 = Polygon{vs3,AvgPoint(vs3)};
+    AmmBee.patterns_.emplace_back( std::make_unique<Window>(Shape(polygon3)));
+
+    auto vs4 = Pattern4(s); auto polygon4 = Polygon{vs4,AvgPoint(vs4)};
+    AmmBee.patterns_.emplace_back( std::make_unique<Window>(Shape(polygon4)));
+    
+    auto vs5 = Pattern5(s); auto polygon5 = Polygon{vs5,AvgPoint(vs5)};
+    AmmBee.patterns_.emplace_back( std::make_unique<Window>(Shape(polygon5)));
+
+    auto vs6 = Pattern6(s); auto polygon6 = Polygon{vs6,AvgPoint(vs6)};
+    AmmBee.patterns_.emplace_back( std::make_unique<Window>(Shape(polygon6)));
 
     for(auto& p : AmmBee.patterns_)
         p->Init();
     return AmmBee;
-
 }
 }
