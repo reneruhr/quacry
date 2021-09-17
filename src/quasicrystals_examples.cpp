@@ -110,6 +110,15 @@ auto Pattern6(float s) -> std::vector<Vec2>
     return vs;
 }
 
+auto Rotate8(const Vec2& in) -> std::vector<Vec2>
+{
+    std::vector<Vec2> out;
+    auto theta = [](int i){ return 	3.1415926535897*2./i; };
+    for(int i = 0; i<8; ++i)
+        out.emplace_back(Mat2(cos(theta(i)),sin(theta(i)),-sin(theta(i)),cos(theta(i)))*in);
+    return out;
+}
+
 auto AmmannBeenker() -> QuasiCrystal 
 {
     const float s = std::sqrt(2);

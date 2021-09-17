@@ -38,7 +38,7 @@ bool InsidePattern(in vec2 p)
 {
   if(n_pattern == 0) return true;
 	for(int i=0; i<n_pattern; i++){
-		if(Wedge( pattern[(i+1)%n]-pattern[i], p-pattern[i] )  < -eps ) return false;
+		if(Wedge( pattern[(i+1)%n_pattern]-pattern[i], p-pattern[i] )  < -eps ) return false;
 	}
 	return true;
 }
