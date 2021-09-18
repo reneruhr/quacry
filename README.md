@@ -2,8 +2,8 @@
 
 ## Features:
 
-### Visualization of Point sets and possible edges between them (defined from a LLL basis)
-### Ammann-Beenker QC with vertex star patterns. (See Baake-Grimm p275)
+- Visualization of Point sets and possible edges between them (defined from an LLL basis)
+- Ammann-Beenker QC with vertex star patterns. (See Baake-Grimm p275)
 
 ## Instructions for building from Source for Linux, Mac, Windows:
 
