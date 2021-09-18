@@ -1,3 +1,6 @@
 [submodule "kipod"]
 	path = kipod
 	url = ../kipod.git
+[submodule "external_libs/quickhull"]
+	path = external_libs/quickhull
+	url = https://github.com/akuukka/quickhull.git

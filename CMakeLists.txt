@@ -11,7 +11,7 @@ include_directories(kipod/include)
 include_directories(kipod/external_libs/)
 
 add_executable(quacry
-  src/main.cpp
+  main.cpp
 
   src/quasicrystals_pointset.h
   src/quasicrystals_pointset.cpp
