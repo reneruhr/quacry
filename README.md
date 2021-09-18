@@ -7,7 +7,7 @@
 
 ## Instructions for building from Source for Linux, Mac, Windows:
 
-Building uses cmake and git to receive the source. Dependencies (via kipod) are GLM, GLFW and GLEW, and are installed via a package manager (on Mac/Linux) or can be cloned as submodules.
+Building uses cmake and git to receive the source. Dependencies (via kipod) are GLM, GLFW and GLEW, and are installed via a package manager (on Mac/Linux) or can be cloned as submodules ( git clone https://github.com/reneruhr/quacry.git --recursive )
 
 ### Ubuntu
 
@@ -26,6 +26,7 @@ Clone and Building Instruction:
 ~$ git clone https://github.com/reneruhr/quacry.git
 ~$ cd quacry
 ~$ git clone https://github.com/reneruhr/kipod.git
+~$ git clone https://github.com/akuukka/quickhull.git external_libs/quickhull/
 ~$ mkdir build
 ~$ cd build
 ~$ cmake ..
@@ -33,6 +34,7 @@ Clone and Building Instruction:
 ~$ ./quacry
 ```
 
+(If you use 'git clone --recursive https://github.com/reneruhr/quacry.git', then cloning kipod and quickhull is not necessary).
 
 ### MacOS (Intel/ARM)
 
