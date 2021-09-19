@@ -10,7 +10,15 @@ include_directories(${SPDLOG_DIR})
 include_directories(kipod/include)
 include_directories(kipod/external_libs/)
 
+file(GLOB quickhull
+    "external_libs/quickhull/*.hpp"
+    "external_libs/quickhull/Structs/*.hpp"
+    "external_libs/quickhull/*.cpp"
+)
+
 add_executable(quacry
+  ${quickhull}
+
   main.cpp
 
   src/quasicrystals_pointset.h
