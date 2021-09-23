@@ -40,6 +40,10 @@ add_executable(quacry
   src/quasicrystals_guimathcontrol.h
   src/quasicrystals_guimathcontrol.cpp
 
+  src/examples/penrose.h
+  src/examples/penrose.cpp
+  src/examples/ammannbeenker.h
+  src/examples/ammannbeenker.cpp
 
 
   src/math/lattice.cpp

@@ -1,9 +1,3 @@
 #pragma once
-#include "quasicrystal.h"
-
-namespace quacry{
-
-    QuasiCrystal AmmannBeenker();
-
-}
-
+#include "examples/ammannbeenker.h"
+#include "examples/penrose.h"

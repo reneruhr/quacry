@@ -40,7 +40,7 @@ void QuasiCrystalsScene::ProcessMouseMoves(MouseMoveEvent &event)
 
 }
 
-void QuasiCrystalsScene::SetupLayout(QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetupLayout(Quasicrystal22 *quacry)
 {
 
 }
@@ -91,14 +91,14 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_["Shape Pattern"]->AttachUniform<glm::vec4>("color");
 }
 
-void QuasiCrystalsScene::SetupUniforms(Projection *projection, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetupUniforms(Projection *projection, Quasicrystal22 *quacry)
 {
     SetUniformInternal(projection, quacry);
     SetUniformPhysical(projection, quacry);
     SetUniformPhysicalBox(projection, quacry);
 }
 
-void QuasiCrystalsScene::SetUniformInternal(Projection *projection, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetUniformInternal(Projection *projection, Quasicrystal22 *quacry)
 {
     auto data = quacry->view_data_.get();
     auto window = quacry->window_.get();
@@ -116,7 +116,7 @@ void QuasiCrystalsScene::SetUniformInternal(Projection *projection, QuasiCrystal
     shader->SetUniform<float>("point_size", data->point_size_window_);
 }
 
-void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, Quasicrystal22 *quacry)
 {
     auto data = quacry->view_data_.get();
     auto window = quacry->window_.get();
@@ -152,7 +152,7 @@ void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, QuasiCrystal
     shader->SetUniform<glm::vec4>("bound_zw", bound);
 }
 
-void QuasiCrystalsScene::SetUniformPhysicalWithEdges(Projection *projection, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetUniformPhysicalWithEdges(Projection *projection, Quasicrystal22 *quacry)
 {
     auto data = quacry->view_data_.get();
     auto window = quacry->window_.get();
@@ -168,7 +168,7 @@ void QuasiCrystalsScene::SetUniformPhysicalWithEdges(Projection *projection, Qua
     shader->SetUniform<glm::mat4>("basis", quacry->GetBasis());
 }
 
-void QuasiCrystalsScene::SetUniformPhysicalBox(Projection *projection, QuasiCrystal *quacry)
+void QuasiCrystalsScene::SetUniformPhysicalBox(Projection *projection, Quasicrystal22 *quacry)
 {
 //    auto data = quacry->view_data_;
 //    auto window_size = quacry->window_size_;
@@ -264,19 +264,19 @@ void QuasiCrystalsScene::Draw()
     kipod::RenderManager::Bind(0);
 }
 
-void QuasiCrystalsScene::AddQuasiCrystal(QuasiCrystal &&quacry)
+void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal22 &&quacry)
 {
     quacries_.emplace_back(
-                std::make_unique<QuasiCrystal>(
+                std::make_unique<Quasicrystal22>(
                     std::move(quacry)));
 }
 
-QuasiCrystal *QuasiCrystalsScene::ActiveQuasiCrystal()
+Quasicrystal22 *QuasiCrystalsScene::ActiveQuasiCrystal()
 {
     return active_quacry_;
 }
 
-void QuasiCrystalsScene::ActiveQuasiCrystal(QuasiCrystal * active)
+void QuasiCrystalsScene::ActiveQuasiCrystal(Quasicrystal22 * active)
 {
     active_quacry_ = active;
 }
@@ -296,7 +296,7 @@ void QuasiCrystalsScene::ActiveProjection(QuasiCrystalsScene::Projection* projec
     active_camera_= projection;
 }
 
-void QuasiCrystalsScene::SetUniformWindow(Projection *projection, QuasiCrystal* quacry)
+void QuasiCrystalsScene::SetUniformWindow(Projection *projection, Quasicrystal22* quacry)
 {
     auto window = quacry->window_.get();
     shaders_["Shape"]->SetUniform<glm::mat4>("transform", window->TransformWorld());
@@ -305,7 +305,7 @@ void QuasiCrystalsScene::SetUniformWindow(Projection *projection, QuasiCrystal* 
     shaders_["Shape"]->SetUniform<float>("depth", window->depth_);
 }
 
-void QuasiCrystalsScene::SetUniformPattern(Projection *projection, QuasiCrystal* quacry)
+void QuasiCrystalsScene::SetUniformPattern(Projection *projection, Quasicrystal22* quacry)
 {
     auto pattern = quacry->active_pattern_;
     auto window = quacry->window_.get();

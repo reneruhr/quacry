@@ -12,27 +12,27 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
 
         std::unordered_map<std::string, std::shared_ptr<kipod::Shader> > shaders_;
 
-        using QuasiCrystalContainer = std::vector<std::unique_ptr<QuasiCrystal>>;
+        using QuasiCrystalContainer = std::vector<std::unique_ptr<Quasicrystal22>>;
         using Projection = kipod::RenderCamera;
         using ProjectionContainer = std::vector<std::unique_ptr<RenderCamera> > ;
 
-        QuasiCrystal* active_quacry_ = nullptr;
+        Quasicrystal22* active_quacry_ = nullptr;
 
         virtual void ProcessKeys(kipod::KeyPressedEvent& event) override;
 
         void ProcessMouseButtons(kipod::MouseButtonEvent& event);
         void ProcessMouseMoves(kipod::MouseMoveEvent& event);
 
-        void SetupLayout(QuasiCrystal* quacry);
+        void SetupLayout(Quasicrystal22* quacry);
         void SetupShaders();
-        void SetupUniforms(Projection *projection, QuasiCrystal *quacry);
+        void SetupUniforms(Projection *projection, Quasicrystal22 *quacry);
 
-        void SetUniformInternal(Projection *projection, QuasiCrystal *quacry);
-        void SetUniformPhysical(Projection *projection, QuasiCrystal *quacry);
-        void SetUniformPhysicalWithEdges(Projection *projection, QuasiCrystal *quacry);
-        void SetUniformPhysicalBox(Projection *projection, QuasiCrystal *quacry);
-        void SetUniformWindow(Projection *projection, QuasiCrystal *quacry);
-        void SetUniformPattern(Projection *projection, QuasiCrystal *quacry);
+        void SetUniformInternal(Projection *projection, Quasicrystal22 *quacry);
+        void SetUniformPhysical(Projection *projection, Quasicrystal22 *quacry);
+        void SetUniformPhysicalWithEdges(Projection *projection, Quasicrystal22 *quacry);
+        void SetUniformPhysicalBox(Projection *projection, Quasicrystal22 *quacry);
+        void SetUniformWindow(Projection *projection, Quasicrystal22 *quacry);
+        void SetUniformPattern(Projection *projection, Quasicrystal22 *quacry);
 
 public:
         QuasiCrystalsScene(int width, int height);
@@ -52,9 +52,9 @@ protected:
         ProjectionContainer& projections_ = RenderScene::cameras_;
         std::unique_ptr<Projection> internal_projection_;
 
-        void AddQuasiCrystal(QuasiCrystal&&);
-        QuasiCrystal* ActiveQuasiCrystal();
-        void ActiveQuasiCrystal(QuasiCrystal*);
+        void AddQuasiCrystal(Quasicrystal22&&);
+        Quasicrystal22* ActiveQuasiCrystal();
+        void ActiveQuasiCrystal(Quasicrystal22*);
         bool HasQuasiCrystal();
 
         Projection* ActiveProjection();

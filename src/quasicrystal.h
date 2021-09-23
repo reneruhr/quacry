@@ -1,29 +1,69 @@
 #pragma once
 #include "quasicrystals_pointset.h"
 #include "../kipod/src/modules/shapes/shape.h"
+#include "../kipod/src/modules/meshmodels/meshmodel.h"
 #include "math/lattice.h"
+#include "Eigen/Dense"
 
 namespace quacry{
-using Window = kipod::Shapes::Shape;
+using Window2 = kipod::Shapes::Shape;
+using Window3 = kipod::MeshModels::MeshModel;
 struct ViewData;
 
-class QuasiCrystal : public Lattice<Basis>, public PointSet
+using Mat5f = Eigen::Matrix<float,5,5>;
+using Vec5f = Eigen::Matrix<float,5,1>;
+using namespace kipod;
+
+struct Quasicrystal
+{
+};
+
+class Quasicrystal22 : public Lattice<Basis4>, public PointSet4, public Quasicrystal
 {
 public:    
-    QuasiCrystal(Basis basis, Window window);
-    QuasiCrystal(Basis basis, Window window, SampleSize sample_size);
-    QuasiCrystal(Basis basis, Window window, std::string name, SampleSize sample_size);
+    Quasicrystal22(Basis4 basis, Window2 window);
+    Quasicrystal22(Basis4 basis, Window2 window, SampleSize sample_size);
+    Quasicrystal22(Basis4 basis, Window2 window, std::string name, SampleSize sample_size);
 
-    std::unique_ptr<Window> window_;
-    std::unique_ptr<ViewData> view_data_= nullptr;
-    std::vector<std::unique_ptr<Window>> patterns_;
+    std::unique_ptr<Window2> window_;
+    std::vector<std::unique_ptr<Window2>> patterns_;
 
-    Window* active_pattern_ = nullptr;
+    Window2* active_pattern_ = nullptr;
     virtual void Init() override;
 
-    void ApplyLLL();
     std::string name_;
-    Basis g_;
+    std::unique_ptr<ViewData> view_data_= nullptr;
+
+    void ApplyLLL();
+    Basis4 g_;
+};
+
+enum class Space { Physical, Internal };
+
+class Quasicrystal23 :  public RenderObject, public Quasicrystal
+{
+    Mat5f lattice_ = Mat5f::Identity();
+    Mat5f transform_ = Mat5f::Identity();
+    Mat5f g_ = Mat5f::Identity();
+    std::unique_ptr<Window3> window_;
+    SampleSize sample_size_ = { -10,10,  -10,10,  -10, 10, -10, 10, -2, 2 }; 
+    std::unique_ptr<std::vector<Vec5f>> sample_; 
+    
+    std::unique_ptr<RenderObject> internal_;
+
+public:
+    Quasicrystal23() = default;
+    Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window);
+
+    void Init();
+    virtual void Draw() override;
+    void Draw(Space);
+    
+    void MakeSample();
+    bool InsideWindow(const Vec3& v);
+
+    std::string name_;
+    std::unique_ptr<ViewData> view_data_= nullptr;
 };
 
 struct ViewData{

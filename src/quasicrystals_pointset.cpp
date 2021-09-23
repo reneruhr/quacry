@@ -2,7 +2,7 @@
 
 namespace quacry{
 
-void PointSet::Init()
+void PointSet4::Init()
 {
     MakeSample();
 
@@ -12,21 +12,21 @@ void PointSet::Init()
     AddLayout(name, std::move(*layout));
 }
 
-void PointSet::Draw()
+void PointSet4::Draw()
 {
    RenderObject::Draw("PointSet");
 }
 
-void PointSet::UpdateSample(const SampleSize& sample)
+void PointSet4::UpdateSample(const SampleSize& sample)
 {
     sample_size_ = sample;
     sample_.clear();
     MakeSample();
-    unsigned long buffer_size = size(sample_) * sizeof(Vector);
+    unsigned long buffer_size = size(sample_) * sizeof(Vector4);
     static_cast<kipod::GLRenderLayout*>(Layout())->vbo_->Add(0, buffer_size, (void*)sample_.data());
 }
 
-std::vector<Vector>* PointSet::MakeSample()
+std::vector<Vector4>* PointSet4::MakeSample()
 {
 	int X0 = sample_size_[0], X = sample_size_[1],
     Y0 = sample_size_[2], Y = sample_size_[3],
@@ -37,7 +37,7 @@ std::vector<Vector>* PointSet::MakeSample()
 	    for(int y=Y0; y<=Y; y++)
 		    for(int z=Z0; z<=Z; z++)
 			    for(int w=W0; w<=W; w++)
-				    sample_.emplace_back(Vector(x,y,z,w));
+				    sample_.emplace_back(Vector4(x,y,z,w));
     return &sample_;
 }
 }
