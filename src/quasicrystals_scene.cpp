@@ -40,11 +40,6 @@ void QuasiCrystalsScene::ProcessMouseMoves(MouseMoveEvent &event)
 
 }
 
-void QuasiCrystalsScene::SetupLayout(Quasicrystal22 *quacry)
-{
-
-}
-
 void QuasiCrystalsScene::SetupShaders()
 {
 //    shaders_.insert({"Quasi Physical", std::make_shared<kipod::Shader>("shaders/inside_polygon.vert.glsl", "shaders/points.frag.glsl")});
@@ -52,6 +47,14 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_.insert({"Quasi Internal", std::make_shared<kipod::Shader>("shaders/inside_polygon_window.vert.glsl", "shaders/points.frag.glsl")});
 
     shaders_.insert({"Quasi Physical with Edges", std::make_shared<kipod::Shader>("shaders/points.vert.glsl", "shaders/points.frag.glsl", "shaders/edges.geom.glsl")});
+
+    shaders_.insert({"Quasicrystal23 Points", std::make_shared<kipod::Shader>("shaders/points23.vert.glsl", "shaders/points.frag.glsl", "shaders/points23.geom.glsl")});
+
+    shaders_["Quasicrystal23 Points"]->AttachUniform<glm::mat4>("pv");
+    shaders_["Quasicrystal23 Points"]->AttachUniform<glm::mat4>("transform");
+    shaders_["Quasicrystal23 Points"]->AttachUniform<glm::vec4>("color");
+    shaders_["Quasicrystal23 Points"]->AttachUniform<bool>("Space");
+    shaders_["Quasicrystal23 Points"]->AttachUniform<float>("point_size");
 
     shaders_["Quasi Physical with Edges"]->AttachUniform<glm::mat4>("pv");
     shaders_["Quasi Physical with Edges"]->AttachUniform<glm::mat4>("transform");
@@ -168,6 +171,17 @@ void QuasiCrystalsScene::SetUniformPhysicalWithEdges(Projection *projection, Qua
     shader->SetUniform<glm::mat4>("basis", quacry->GetBasis());
 }
 
+void QuasiCrystalsScene::SetUniformQuasicrystal23(Projection *projection, Quasicrystal23 *quacry)
+{
+    auto data = quacry->view_data_.get();
+    auto shader = shaders_["Quasicrystal23 Points"];
+    shader->SetUniform<glm::mat4>("pv", *projection);
+    shader->SetUniform<glm::mat4>("transform", quacry->Transform());
+    shader->SetUniform<glm::vec4>("color", data->color_);
+    shader->SetUniform<bool>("Space", false);
+    shader->SetUniform<float>("point_size", data->point_size_);
+}
+
 void QuasiCrystalsScene::SetUniformPhysicalBox(Projection *projection, Quasicrystal22 *quacry)
 {
 //    auto data = quacry->view_data_;
@@ -221,12 +235,11 @@ void QuasiCrystalsScene::Setup()
 
 void QuasiCrystalsScene::Draw()
 {
-    if(auto quacry = ActiveQuasiCrystal()){
-        framebuffers_["Physical Space"]->Bind();
-        glEnable( GL_BLEND );
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+    framebuffers_["Physical Space"]->Bind();
+    glEnable( GL_BLEND );
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if(auto quacry = dynamic_cast<Quasicrystal22*>(ActiveQuasiCrystal())){
         quacry->ApplyLLL();
         
         shaders_["Quasi Physical"]->Use();
@@ -257,10 +270,13 @@ void QuasiCrystalsScene::Draw()
             SetUniformPattern(internal_projection_.get(), quacry);
             quacry->active_pattern_->Draw();
         }
-
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_BLEND);
+    }else if(auto quacry = dynamic_cast<Quasicrystal23*>(ActiveQuasiCrystal())){
+        shaders_["Quasicrystal23 Points"]->Use();
+        SetUniformQuasicrystal23(ActiveProjection(), quacry);
+        quacry->Draw();
     }
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
     kipod::RenderManager::Bind(0);
 }
 
@@ -271,12 +287,19 @@ void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal22 &&quacry)
                     std::move(quacry)));
 }
 
-Quasicrystal22 *QuasiCrystalsScene::ActiveQuasiCrystal()
+void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal23 &&quacry)
+{
+    quacries_.emplace_back(
+                std::make_unique<Quasicrystal23>(
+                    std::move(quacry)));
+}
+
+auto QuasiCrystalsScene::ActiveQuasiCrystal() -> Quasicrystal*
 {
     return active_quacry_;
 }
 
-void QuasiCrystalsScene::ActiveQuasiCrystal(Quasicrystal22 * active)
+void QuasiCrystalsScene::ActiveQuasiCrystal(Quasicrystal * active)
 {
     active_quacry_ = active;
 }

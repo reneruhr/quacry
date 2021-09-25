@@ -2,6 +2,7 @@
 #include "kipod.h"
 #include "math/lattice.h"
 #include "math/sl.h"
+#include "Eigen/Dense"
 
 using std::vector;
 using std::string;
@@ -15,8 +16,12 @@ typedef vector<Vec4> Vectors4;
 typedef vector<Mat4> Matrices4;
 typedef vector<Vec2> Vectors2;
 
+using Mat5f = Eigen::Matrix<float,5,5>;
+using Vec5f = Eigen::Matrix<float,5,1>;
+
 void DrawColumnMatrix4(const Mat4& m);
 void DrawRowMatrix4(const Mat4& m);
+void DrawMatrix5(const Mat5f& m);
 
 struct SampleSize4
         {

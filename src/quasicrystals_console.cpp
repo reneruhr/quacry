@@ -11,7 +11,7 @@ void QuasiCrystalsConsole::ConsoleContent(){
 void QuasiCrystalsConsole::SL2Action()
 {
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
-    auto quacry = scene->ActiveQuasiCrystal();
+    auto quacry = dynamic_cast<Quasicrystal22*>(scene->ActiveQuasiCrystal());
 
     static glm::mat4 current_transform = glm::mat4(1.0);
 

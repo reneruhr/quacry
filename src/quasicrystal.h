@@ -16,6 +16,10 @@ using namespace kipod;
 
 struct Quasicrystal
 {
+    Quasicrystal() = default;
+    Quasicrystal(const std::string& name) : name_(name){}
+    std::string name_;
+    virtual ~Quasicrystal(){}
 };
 
 class Quasicrystal22 : public Lattice<Basis4>, public PointSet4, public Quasicrystal
@@ -31,7 +35,6 @@ public:
     Window2* active_pattern_ = nullptr;
     virtual void Init() override;
 
-    std::string name_;
     std::unique_ptr<ViewData> view_data_= nullptr;
 
     void ApplyLLL();
@@ -61,8 +64,7 @@ public:
     
     void MakeSample();
     bool InsideWindow(const Vec3& v);
-
-    std::string name_;
+    Mat5f& GetBasis() { return lattice_; };
     std::unique_ptr<ViewData> view_data_= nullptr;
 };
 
@@ -75,6 +77,7 @@ struct ViewData{
     Vec4 color_w_ = {0.0f, 1.0f, 0.00f, 0.3f};
     Vec4 color_window_ = Vec4(139./255,69./255,19./255,1);
     Vec4 color_pattern_ = Vec4(1.0f,0.8f,0.6f,1.0f);
+    Vec4 color_ = Vec4(1.f);
 
     float depth_ = -0.7f;
     bool edges_ = false;

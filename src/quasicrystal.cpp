@@ -5,10 +5,10 @@ namespace quacry{
 using Mat4 = glm::mat4;
 
 Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window, std::string name, SampleSize sample)
-    : Lattice(basis), PointSet4(sample),
+    : Lattice(basis), PointSet4(sample), Quasicrystal(name),
       window_(std::make_unique<Window2>(window)),
     view_data_(std::make_unique<ViewData>()),
-    name_(name), g_(basis)
+     g_(basis)
 {
     Init();
 }
@@ -63,7 +63,7 @@ bool Quasicrystal23::InsideWindow(const Vec3& v)
 }
 
 Quasicrystal23::Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window)
-: RenderObject(), name_(name), lattice_(lattice), window_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>())
+: RenderObject(), Quasicrystal(name), lattice_(lattice), window_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>())
 {
     MakeSample();
     Init();

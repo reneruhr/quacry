@@ -10,6 +10,16 @@ void DrawColumnMatrix4(const Mat4& m)
     }
 }
 
+void DrawMatrix5(const Mat5f& m) 
+{
+    for(int j =0; j <5; j++){
+        for (int i = 0; i < 5; i++){
+            ImGui::Text("%.1f", m(j,i));
+            if(i<4) ImGui::SameLine();
+        }
+    }
+}
+
 void DrawRowMatrix4(const Mat4& m) 
 {
     for (int i = 0; i < 4; i++){

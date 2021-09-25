@@ -18,15 +18,23 @@ void QuasiCrystalsSidebar::AddQuasiCrystal()
 {
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
 
-    ImGui::PushID("Add Quacry");
+    /*ImGui::PushID("Add Quacry");
     if(ImGui::Button("Add")){
         LOG_CONSOLE("Please enter Basis in Console!");
     }
     ImGui::PopID();
+    */
     ImGui::PushID("Add Quacry Examples");
     if(ImGui::Button("Add Ammann Beenker")){
         LOG_CONSOLE("Added Ammann Beenker");
         scene->AddQuasiCrystal(AmmannBeenker());
+        scene->ActiveQuasiCrystal(scene->quacries_.back().get());
+    }
+    ImGui::PopID();
+    ImGui::PushID("Add Penrose");
+    if(ImGui::Button("Add Penrose")){
+        LOG_CONSOLE("Added Penrose");
+        scene->AddQuasiCrystal(Penrose());
         scene->ActiveQuasiCrystal(scene->quacries_.back().get());
     }
     ImGui::PopID();
@@ -48,7 +56,6 @@ void QuasiCrystalsSidebar::QuasiCrystalsList()
                 selected_quacry = n;
                 scene->ActiveQuasiCrystal(current_quacry->get());
                 }
-            ImGui::SameLine();
         }
         ImGui::Separator();
     }
@@ -59,15 +66,13 @@ void QuasiCrystalsSidebar::LatticeControl()
     if (ImGui::CollapsingHeader("Lattice")){
 
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
-    auto quacry = scene->ActiveQuasiCrystal();
 
     static glm::mat4 scale_matrix = glm::mat4(1.0);
     static glm::mat4 current_transform = glm::mat4(1.0);
-
-    if (quacry){ 
+    static float lattice_scale=1;
+    if(auto quacry = dynamic_cast<Quasicrystal22*>(scene->ActiveQuasiCrystal())){ 
         if(ImGui::Button("Transpose Lattice"))
            quacry->BaseChange(transpose(quacry->GetBasis()));
-        static float lattice_scale=1;
         ImGui::Text("Scale Lattice (uniformly xyzw)");
         if (ImGui::SliderFloat("##LatticeScale", &lattice_scale, 0.2, 5.0f)){
            scale_matrix = glm::mat4(lattice_scale);
@@ -78,7 +83,17 @@ void QuasiCrystalsSidebar::LatticeControl()
         ImGui::Text("Current Transformation:");
         DrawColumnMatrix4(quacry->Transform());
 
-    } // quacry
+    }else if(auto quacry = dynamic_cast<Quasicrystal23*>(scene->ActiveQuasiCrystal())){ 
+        ImGui::Text("Scale Lattice (uniformly xyzw)");
+        if (ImGui::SliderFloat("##LatticeScale", &lattice_scale, 0.2, 5.0f)){
+           scale_matrix = glm::mat4(lattice_scale);
+           quacry->local_->Replace(scale_matrix);
+        }
+        ImGui::Text("Basis:");
+        DrawMatrix5(quacry->GetBasis());
+        ImGui::Text("Current Transformation:");
+        DrawColumnMatrix4(quacry->Transform());
+    }
     } //Lattice control
 }
 
@@ -87,7 +102,7 @@ void QuasiCrystalsSidebar::WindowControl()
     if (ImGui::CollapsingHeader("Window")){
 
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
-    auto quacry = scene->ActiveQuasiCrystal();
+    auto quacry = dynamic_cast<Quasicrystal22*>(scene->ActiveQuasiCrystal());
 
     if (quacry){ // ImGui::TreeNode("Modify Lattice and Window") &&
             auto window = quacry->window_.get();
@@ -130,9 +145,8 @@ void QuasiCrystalsSidebar::ViewOptions()
 {
     if (ImGui::CollapsingHeader("View Options")){
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
-    auto quacry = scene->ActiveQuasiCrystal();
 
-    if (quacry){ // ImGui::TreeNode("Looks") &&
+    if ( auto quacry = dynamic_cast<Quasicrystal22*>(scene->ActiveQuasiCrystal())){
         auto window = quacry->window_.get();
         auto data = quacry->view_data_.get();
 
@@ -218,6 +232,15 @@ void QuasiCrystalsSidebar::ViewOptions()
             data->color_window_ = temp;
         }
         // View
+    } else if ( auto quacry = dynamic_cast<Quasicrystal23*>(scene->ActiveQuasiCrystal())){
+        auto data = quacry->view_data_.get();
+
+        static ImVec4 color= ImVec4(data->color_[0],data->color_[1],data->color_[2],data->color_[3]);
+        if (ImGui::ColorEdit4("color##color", (float*)&color, 0)){
+            auto temp =  glm::make_vec4((float*)&color);
+            data->color_ = temp;
+        }
+
     }
     }
 }
