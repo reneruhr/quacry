@@ -63,14 +63,17 @@ bool Quasicrystal23::InsideWindow(const Vec3& v)
 }
 
 Quasicrystal23::Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window)
-: RenderObject(), Quasicrystal(name), lattice_(lattice), window_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>())
+: RenderObject(), Quasicrystal(name), lattice_(lattice), window_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), g_(lattice) 
 {
+    windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5(&sample_size_));    
     MakeSample();
     Init();
 }
 
 void Quasicrystal23::MakeSample()
 {
+    int total = (sample_size_[1]-sample_size_[0])*(sample_size_[3]-sample_size_[2])*(sample_size_[5]-sample_size_[4])*(sample_size_[7]-sample_size_[6])*(sample_size_[9]-sample_size_[8]);
+    LOG_INFO("Creating Sample of {} elements", total);
     sample_ = std::make_unique<std::vector<Vec5f>>();
     for(int x0= sample_size_[0]; x0< sample_size_[1]; ++x0)
     for(int x1= sample_size_[2]; x1< sample_size_[3]; ++x1)
@@ -78,7 +81,14 @@ void Quasicrystal23::MakeSample()
     for(int x3= sample_size_[6]; x3< sample_size_[7]; ++x3)
     for(int x4= sample_size_[8]; x4< sample_size_[9]; ++x4){
         Vec5f v = g_ * Vec5f(x0,x1,x2,x3,x4);
-        if(InsideWindow(Vec3(v[2],v[3],v[4]))) sample_->push_back(v);
+        if(InsideWindow(Vec3(v[2],v[3],v[4]))) {
+            sample_->push_back(v);
+            windowed_sample_->Add({x0,x1,x2,x3,x4});
+        }
+    }
+    LOG_INFO("Actual sample points in window: {}", sample_->size());
+    for(auto& s : *(windowed_sample_->sample_)){
+        s.second = windowed_sample_->Neighbors(s.first);
     }
 }
 

@@ -9,6 +9,7 @@ using Mat4 = glm::mat4;
 using Vec5f = Eigen::Matrix<float,5,1>;
 using Mat5f = Eigen::Matrix<float,5,5>;
 using namespace kipod::MeshModels;
+
 auto PenroseRotation() -> Mat5f 
 {
     Mat5f g;

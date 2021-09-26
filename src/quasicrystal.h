@@ -4,11 +4,12 @@
 #include "../kipod/src/modules/meshmodels/meshmodel.h"
 #include "math/lattice.h"
 #include "Eigen/Dense"
-
 namespace quacry{
 using Window2 = kipod::Shapes::Shape;
 using Window3 = kipod::MeshModels::MeshModel;
 struct ViewData;
+class WindowedSample5;
+
 
 using Mat5f = Eigen::Matrix<float,5,5>;
 using Vec5f = Eigen::Matrix<float,5,1>;
@@ -49,9 +50,9 @@ class Quasicrystal23 :  public RenderObject, public Quasicrystal
     Mat5f transform_ = Mat5f::Identity();
     Mat5f g_ = Mat5f::Identity();
     std::unique_ptr<Window3> window_;
-    SampleSize sample_size_ = { -10,10,  -10,10,  -10, 10, -10, 10, -2, 2 }; 
+    SampleSize sample_size_ = { -5,5,  -5,5,  -5, 5, -5, 5, -2, 2 }; 
     std::unique_ptr<std::vector<Vec5f>> sample_; 
-    
+    std::unique_ptr<WindowedSample5> windowed_sample_;
     std::unique_ptr<RenderObject> internal_;
 
 public:
@@ -83,6 +84,40 @@ struct ViewData{
     bool edges_ = false;
     bool window_shape_ = false;
     bool pattern_shape_ = false;
+};
+
+using Vec5i = Eigen::Matrix<int, 5, 1>;
+struct VecLess{
+bool operator()(const Vec5i& a, const Vec5i& b) const
+{
+    for(size_t i = 0; i<5; ++i)
+        if(a[i] > b[i]) return false;
+        else if(a[i] < b[i]) return true;
+    return false;
+}
+};
+
+class WindowedSample5{
+    using Vec5Map = std::map<Vec5i, std::vector<int>, VecLess>;
+    SampleSize* sample_size_;
+    public:
+    std::unique_ptr<Vec5Map> sample_;
+    WindowedSample5() = default;
+    WindowedSample5(SampleSize* s) : sample_size_(s), sample_(std::make_unique<Vec5Map>()){}
+    void Add(const Vec5i& index){ sample_->insert({index, {}}); }
+    bool Get(const Vec5i& index){ auto res = sample_->find(index);
+                                   if(res!=sample_->end()) return true;
+                                   else return false; } 
+    auto Neighbors(const Vec5i& index) -> std::vector<int>{
+        std::vector<int> neighbors = {};
+        for(size_t i = 0; i<5;  ++i){
+            Vec5i v(0,0,0,0,0);
+            v[i] = 1;
+            if(Get(index+v)) neighbors.push_back( i );
+            if(Get(index-v)) neighbors.push_back(-i );
+       }
+      return neighbors; 
+    }
 };
 
 }
