@@ -102,9 +102,8 @@ void QuasiCrystalsSidebar::WindowControl()
     if (ImGui::CollapsingHeader("Window")){
 
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
-    auto quacry = dynamic_cast<Quasicrystal22*>(scene->ActiveQuasiCrystal());
 
-    if (quacry){ // ImGui::TreeNode("Modify Lattice and Window") &&
+    if (auto quacry = dynamic_cast<Quasicrystal22*>(scene->ActiveQuasiCrystal())){ // ImGui::TreeNode("Modify Lattice and Window") &&
             auto window = quacry->window_.get();
 
             static int selected_pattern = quacry->patterns_.size();
@@ -121,6 +120,8 @@ void QuasiCrystalsSidebar::WindowControl()
                     quacry->active_pattern_ = b==e ? nullptr : (*b).get();
                 }
             }
+    }else if (auto quacry = dynamic_cast<Quasicrystal23*>(scene->ActiveQuasiCrystal())){ // ImGui::TreeNode("Modify Lattice and Window") &&
+        scene->GetMeshModelModule()->DrawSidebarContent();
     }
     }
 }
