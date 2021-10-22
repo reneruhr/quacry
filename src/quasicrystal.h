@@ -49,7 +49,8 @@ class Quasicrystal23 :  public RenderObject, public Quasicrystal
     Mat5f lattice_ = Mat5f::Identity();
     Mat5f transform_ = Mat5f::Identity();
     Mat5f g_ = Mat5f::Identity();
-    std::unique_ptr<Window3> window_;
+    std::unique_ptr<Window3> window_temp_;
+    Window3* window_;
     SampleSize sample_size_ = { -5,5,  -5,5,  -5, 5, -5, 5, -2, 2 }; 
     std::unique_ptr<std::vector<Vec5f>> sample_; 
     std::unique_ptr<WindowedSample5> windowed_sample_;
@@ -67,6 +68,8 @@ public:
     bool InsideWindow(const Vec3& v);
     Mat5f& GetBasis() { return lattice_; };
     std::unique_ptr<ViewData> view_data_= nullptr;
+    Window3* GetWindow() { return window_; } 
+    std::unique_ptr<Window3> GiveUpWindow() { return std::move(window_temp_); }
 };
 
 struct ViewData{

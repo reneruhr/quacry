@@ -6,28 +6,28 @@ namespace quacry{
 void QuasiCrystalsScene::ProcessKeys(KeyPressedEvent &event)
 {
 
-        float stepsize = 1.0f;
-        auto key = event.GetKeyCode();
-        auto mod = event.GetMod();
-    
-        if(key == Key::Left && mod == Mod::None){
-                    ActiveProjection()->Move(kipod::RenderCamera::Movement::LEFT, stepsize);
-                }
-        else if(key == Key::Right && mod == Mod::None){
-                    ActiveProjection()->Move(kipod::RenderCamera::Movement::RIGHT, stepsize);
-                }
-        else if(key == Key::PageUp && mod == Mod::None){
-                    ActiveProjection()->ScaleOrthogonalCamera( stepsize);
-                }
-        else if(key == Key::PageDown && mod == Mod::None){
-                    ActiveProjection()->ScaleOrthogonalCamera( -stepsize);
-                }
-        else if(key == Key::Up && mod == Mod::None){
-                    ActiveProjection()->Move(kipod::RenderCamera::Movement::UP, stepsize);
-                }
-        else if(key == Key::Down && mod == Mod::None){
-                    ActiveProjection()->Move(kipod::RenderCamera::Movement::DOWN, stepsize);
-                }
+    float stepsize = 1.0f;
+    auto key = event.GetKeyCode();
+    auto mod = event.GetMod();
+
+    if(key == Key::Left && mod == Mod::None){
+        ActiveProjection()->Move(kipod::RenderCamera::Movement::LEFT, stepsize);
+    }
+    else if(key == Key::Right && mod == Mod::None){
+        ActiveProjection()->Move(kipod::RenderCamera::Movement::RIGHT, stepsize);
+    }
+    else if(key == Key::PageUp && mod == Mod::None){
+        ActiveProjection()->ScaleOrthogonalCamera( stepsize);
+    }
+    else if(key == Key::PageDown && mod == Mod::None){
+        ActiveProjection()->ScaleOrthogonalCamera( -stepsize);
+    }
+    else if(key == Key::Up && mod == Mod::None){
+        ActiveProjection()->Move(kipod::RenderCamera::Movement::UP, stepsize);
+    }
+    else if(key == Key::Down && mod == Mod::None){
+        ActiveProjection()->Move(kipod::RenderCamera::Movement::DOWN, stepsize);
+    }
 }
 
 void QuasiCrystalsScene::ProcessMouseButtons(MouseButtonEvent &event)
@@ -38,6 +38,36 @@ void QuasiCrystalsScene::ProcessMouseButtons(MouseButtonEvent &event)
 void QuasiCrystalsScene::ProcessMouseMoves(MouseMoveEvent &event)
 {
 
+}
+
+void QuasiCrystalsScene::SetupOptions()
+{
+    Add(kipod::ModeToggle("Take Screenshot", false));
+}
+
+void QuasiCrystalsScene::SetupMeshModelModule()
+{
+    auto module = MeshModelModule("MeshModels", width_, height_);
+    module.Init();
+    meshmodel_module_ = std::make_unique<MeshModelModule>(std::move(module));
+    GetMeshModelScene()->Toggle("Prepare Screen").Off();
+    GetMeshModelScene()->Signup();
+    GetMeshModelScene()->Add("Left", Key::J);
+    GetMeshModelScene()->Add("Right", Key::L);
+    GetMeshModelScene()->Add("Up", Key::I);
+    GetMeshModelScene()->Add("Forward", Key::P);
+    GetMeshModelScene()->Add("Down", Key::K);
+    GetMeshModelScene()->Add("Backward", Key::Semicolon);
+}
+
+auto QuasiCrystalsScene::GetMeshModelScene() -> MeshModelScene*
+{
+    return meshmodel_module_->GetScene();
+}
+
+auto QuasiCrystalsScene::GetMeshModelModule() -> MeshModelModule*
+{
+    return meshmodel_module_.get();
 }
 
 void QuasiCrystalsScene::SetupShaders()
@@ -220,6 +250,9 @@ void QuasiCrystalsScene::Setup()
     name_ = "Quasicrystals";
     SetupShaders();
 
+    SetupMeshModelModule();
+
+
     PhysicalWindow pw;
     projections_.emplace_back(std::make_unique<Projection>( pw.Left(), pw.Right(), pw.Bottom(), pw.Top(), pw.Near(), pw.Far()));
     ActiveProjection(projections_.back().get());
@@ -235,6 +268,7 @@ void QuasiCrystalsScene::Setup()
 
 void QuasiCrystalsScene::Draw()
 {
+    frame_count_++;
     framebuffers_["Physical Space"]->Bind();
     glEnable( GL_BLEND );
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -250,6 +284,7 @@ void QuasiCrystalsScene::Draw()
             SetUniformPhysicalWithEdges(ActiveProjection(), quacry);
             quacry->Draw();
         }
+        if(Toggle("Take Screenshot")) TakeScreenshot("Physical", false);
 
         framebuffers_["Internal Space"]->Bind();
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -270,28 +305,44 @@ void QuasiCrystalsScene::Draw()
             SetUniformPattern(internal_projection_.get(), quacry);
             quacry->active_pattern_->Draw();
         }
+
+        if(Toggle("Take Screenshot")) TakeScreenshot("Internal", true);
+
     }else if(auto quacry = dynamic_cast<Quasicrystal23*>(ActiveQuasiCrystal())){
         shaders_["Quasicrystal23 Points"]->Use();
         SetUniformQuasicrystal23(ActiveProjection(), quacry);
         quacry->Draw();
+
+        if(Toggle("Take Screenshot")) TakeScreenshot("Physical", false);
+        framebuffers_["Internal Space"]->Bind();
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        GetMeshModelScene()->Draw();
+
+        if(Toggle("Take Screenshot")) TakeScreenshot("Internal", true);
     }
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
+
     kipod::RenderManager::Bind(0);
 }
 
 void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal22 &&quacry)
 {
     quacries_.emplace_back(
-                std::make_unique<Quasicrystal22>(
-                    std::move(quacry)));
+            std::make_unique<Quasicrystal22>(
+                std::move(quacry)));
 }
 
 void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal23 &&quacry)
 {
     quacries_.emplace_back(
-                std::make_unique<Quasicrystal23>(
-                    std::move(quacry)));
+            std::make_unique<Quasicrystal23>(
+                std::move(quacry)));
+    auto qcry = static_cast<Quasicrystal23*>(quacries_.back().get());
+
+    GetMeshModelScene()->AddModel(qcry->GiveUpWindow());
 }
 
 auto QuasiCrystalsScene::ActiveQuasiCrystal() -> Quasicrystal*

@@ -1,16 +1,21 @@
 #pragma once
 #include "kipod.h"
 #include "quasicrystal.h"
+#include "../kipod/src/modules/meshmodels/meshmodel_module.h"
+
 
 namespace quacry{
 using namespace kipod;
-
+using namespace kipod::MeshModels;
 class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, public kipod::RenderScene{
         friend class QuasiCrystalsSidebar;
         friend class QuasiCrystalsConsole;
         friend class QuasiCrystalsModule;
 
         std::unordered_map<std::string, std::shared_ptr<kipod::Shader> > shaders_;
+
+        std::unique_ptr<MeshModelModule> meshmodel_module_; 
+
 
         using QuasiCrystalContainer = std::vector<std::unique_ptr<Quasicrystal>>;
         using Projection = kipod::RenderCamera;
@@ -22,6 +27,10 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
 
         void ProcessMouseButtons(kipod::MouseButtonEvent& event);
         void ProcessMouseMoves(kipod::MouseMoveEvent& event);
+
+        void SetupMeshModelModule();
+
+        void SetupOptions();
 
         void SetupShaders();
         void SetupUniforms(Projection *projection, Quasicrystal22 *quacry);
@@ -59,6 +68,10 @@ protected:
 
         Projection* ActiveProjection();
         void ActiveProjection(Projection*);
+
+        auto GetMeshModelScene() -> MeshModelScene*;
+        auto GetMeshModelModule() -> MeshModelModule*;
+
 };
 }
 

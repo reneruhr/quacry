@@ -16,7 +16,7 @@ int main( int argc, char **argv )
 //    int width = 1024, height = 768;
     //int width = 512, height = 384;
 
-    int width = 800, height = 800;
+    int width = 600, height = 400;
     kipod::Application kipod(width, height);
     kipod.Init();
     kipod.Add(QuasiCrystalsModule("Quasicrystals", width, height));
@@ -24,7 +24,8 @@ int main( int argc, char **argv )
     auto quacry = kipod.GetModule("Quasicrystals");
     auto scene = static_cast<QuasiCrystalsModule*>(quacry)->GetScene();
     auto menu = static_cast<QuasiCrystalsModule*>(quacry)->GetScene();
-
+    
+    scene->SetFixedRatio(false);
     kipod.Run();
     kipod.ShutDown();
 

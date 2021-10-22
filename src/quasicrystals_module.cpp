@@ -19,12 +19,21 @@ auto QuasiCrystalsModule::GetScene() -> QuasiCrystalsScene*
 }
 
 void QuasiCrystalsModuleMenu::Draw(){
-    if (ImGui::BeginMenu("Examples"))
-    {
+    if (ImGui::BeginMenu("Examples")) {
         if(ImGui::MenuItem("Example 1" ,  "", true)){
         }
-            ImGui::EndMenu();
+        ImGui::EndMenu();
+    }
+    if( ImGui::BeginMenu("Record")){
+        static int frames_per_shot = 30;
+        if(ImGui::MenuItem("Record" ,  "", scene_->Toggle("Take Screenshot"))){
+            scene_->Toggle("Take Screenshot").Switch();
         }
+        if(ImGui::SliderInt("Frames per Screenshot", &frames_per_shot, 1, 120)) {
+                scene_->SetFramesPerScreenshot(frames_per_shot);
+        }
+        ImGui::EndMenu();
+    }
 }
 }
 

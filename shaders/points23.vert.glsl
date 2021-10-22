@@ -1,8 +1,6 @@
 #version 330 core
-
 layout (location = 0) in vec2 in_physical;
 layout (location = 1) in vec3 in_internal;
-
 
 layout (location = 2) in vec4 in_neighbors1;
 layout (location = 3) in vec4 in_neighbors2;

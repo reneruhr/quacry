@@ -63,8 +63,9 @@ bool Quasicrystal23::InsideWindow(const Vec3& v)
 }
 
 Quasicrystal23::Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window)
-: RenderObject(), Quasicrystal(name), lattice_(lattice), window_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), g_(lattice) 
+: RenderObject(), Quasicrystal(name), lattice_(lattice), window_temp_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), g_(lattice) 
 {
+    window_ = window_temp_.get();
     windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5(&sample_size_));    
     MakeSample();
     Init();
@@ -115,6 +116,5 @@ void Quasicrystal23::Draw(Space space)
    if(space == Space::Physical)  RenderObject::Draw("Quasicrystal23");
    else if(space == Space::Internal)  internal_->Draw("Quasicrystal23");
 }
-
 
 }
