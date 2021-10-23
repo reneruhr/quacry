@@ -3,10 +3,10 @@
 #include "quasicrystal.h"
 #include "../kipod/src/modules/meshmodels/meshmodel_module.h"
 
-
 namespace quacry{
 using namespace kipod;
 using namespace kipod::MeshModels;
+
 class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, public kipod::RenderScene{
         friend class QuasiCrystalsSidebar;
         friend class QuasiCrystalsConsole;
@@ -15,7 +15,6 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
         std::unordered_map<std::string, std::shared_ptr<kipod::Shader> > shaders_;
 
         std::unique_ptr<MeshModelModule> meshmodel_module_; 
-
 
         using QuasiCrystalContainer = std::vector<std::unique_ptr<Quasicrystal>>;
         using Projection = kipod::RenderCamera;
@@ -41,7 +40,7 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
         void SetUniformPhysicalBox(Projection *projection, Quasicrystal22 *quacry);
         void SetUniformWindow(Projection *projection, Quasicrystal22 *quacry);
         void SetUniformPattern(Projection *projection, Quasicrystal22 *quacry);
-        void SetUniformQuasicrystal23(Projection *projection, Quasicrystal23 *quacry);
+        void SetUniformQuasicrystal23(Projection *projection, Quasicrystal23 *quacry, Space space);
 public:
         QuasiCrystalsScene(int width, int height);
         QuasiCrystalsScene(QuasiCrystalsScene&) = delete;
@@ -49,7 +48,6 @@ public:
         QuasiCrystalsScene(QuasiCrystalsScene&&) = default;
         QuasiCrystalsScene& operator=(QuasiCrystalsScene&&) = delete;
         ~QuasiCrystalsScene() = default;
-
 protected:
         virtual void Signup() override;
         virtual void Receive(std::shared_ptr<kipod::Event> event) override;
@@ -71,7 +69,6 @@ protected:
 
         auto GetMeshModelScene() -> MeshModelScene*;
         auto GetMeshModelModule() -> MeshModelModule*;
-
 };
 }
 

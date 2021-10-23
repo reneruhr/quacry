@@ -7,8 +7,9 @@ layout (location = 3) in vec4 in_neighbors2;
 layout (location = 4) in vec4 in_neighbors3;
 layout (location = 5) in int  in_neighbors_count;
 
-uniform bool Space;
-const bool Physical = false;
+uniform int Space;
+const int Physical = 0;
+const int Internal = 1;
 
 out vec3 complement;
 out vec4 nbs1, nbs2, nbs3;
@@ -19,7 +20,7 @@ void main()
 	if(Space == Physical){	
 		complement = in_internal;
 		gl_Position = vec4(in_physical, 0, 1);
-	}else{
+	}else if(Space == Internal){
 		complement = vec3(in_physical, 0);
 		gl_Position = vec4(in_internal, 1);
 	}

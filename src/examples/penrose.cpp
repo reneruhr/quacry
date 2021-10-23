@@ -1,6 +1,7 @@
 #include "penrose.h"
 #include <Eigen/Dense>
 #include "../../external_libs/quickhull/QuickHull.hpp"
+
 namespace quacry{
 using Vec2 = glm::vec2;
 using Vec3 = glm::vec3;
