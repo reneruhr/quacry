@@ -8,3 +8,5 @@ src/.DS_Store
 tags
 .DS_Store
 *.json
+.idea/
+cmake-build-debug/
