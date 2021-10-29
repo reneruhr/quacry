@@ -14,18 +14,18 @@ using namespace kipod::MeshModels;
 auto PenroseRotation() -> Mat5f 
 {
     Mat5f g;
-    float c = std::sqrt(2./5);
-    float t = 2./5 * 3.1415926535;
-    float u = 1./std::sqrt(2.);
-    auto si = [=](int i){ return sin(i*t); };
-    auto co = [=](int i){ return cos(i*t); };
+    double c = std::sqrt(2./5);
+    double t = 2./5 * 3.1415926535;
+    double u = 1./std::sqrt(2.);
+    auto si = [=](int i){ return (float)sin(i*t); };
+    auto co = [=](int i){ return (float)cos(i*t); };
     for(int j = 0; j<5; ++j)
         g.col(j) = c*Vec5f(co(j), si(j), co(2*j), si(2*j), u);
 
     return g;
 }
 
-auto PenroseInternalPolytope(Mat5f g, Vec5f gamma) -> std::pair<std::vector<Vec3>,std::vector<unsigned int>>
+auto PenroseInternalPolytope(Mat5f g, const Vec5f& gamma) -> std::pair<std::vector<Vec3>,std::vector<unsigned int>>
 {
     LOG_INFO("Creating Internal Penrose Polytope from data g={} and gamma={}", g,gamma);
 
@@ -35,7 +35,7 @@ auto PenroseInternalPolytope(Mat5f g, Vec5f gamma) -> std::pair<std::vector<Vec3
     auto g_penrose = PenroseRotation();
     g = g*g_penrose;
     auto unit_cube = std::vector<Vec5f>();
-    auto s = [](int i, int j){ return (i & (1 << j)) == 0 ? -0.5 : 0.5; };
+    auto s = [](int i, int j){ return (i & (1 << j)) == 0 ? -0.5f : 0.5f; };
     LOG_INFO("Creating 5-dim Unitcube:");
     for(int i = 0; i<32; ++i){
        Vec5f v = { s(i,0), s(i,1),s(i,2),s(i,3),s(i,4)}; 
@@ -43,11 +43,11 @@ auto PenroseInternalPolytope(Mat5f g, Vec5f gamma) -> std::pair<std::vector<Vec3
        LOG_INFO("{}th vector = {}", i, v.transpose());
     }
     for(auto& v : unit_cube) v = g*(v + gamma);
-    for(const auto& v : unit_cube) vertices.push_back({v[2],v[3],v[4]});
+    for(const auto& v : unit_cube) vertices.emplace_back(v[2],v[3],v[4]);
     auto hull = qh.getConvexHull((float*)vertices.data(), vertices.size(), true, false);
     auto hull_vertices = std::vector<glm::vec3>();
     auto indices = std::vector<unsigned int>();
-    for(auto& v : hull.getVertexBuffer()) hull_vertices.push_back({v.x,v.y,v.z});
+    for(auto& v : hull.getVertexBuffer()) hull_vertices.emplace_back(v.x,v.y,v.z);
     for(auto& v : hull.getIndexBuffer()) indices.push_back(v);
     return std::make_pair(hull_vertices, indices);
 }

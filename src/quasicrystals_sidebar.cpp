@@ -16,7 +16,6 @@ void QuasiCrystalsSidebar::SideBarContent()
 
 void QuasiCrystalsSidebar::AddQuasiCrystal()
 {
-    auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
 
     /*ImGui::PushID("Add Quacry");
     if(ImGui::Button("Add")){
@@ -24,20 +23,6 @@ void QuasiCrystalsSidebar::AddQuasiCrystal()
     }
     ImGui::PopID();
     */
-    ImGui::PushID("Add Quacry Examples");
-    if(ImGui::Button("Add Ammann Beenker")){
-        LOG_CONSOLE("Added Ammann Beenker");
-        scene->AddQuasiCrystal(AmmannBeenker());
-        scene->ActiveQuasiCrystal(scene->quacries_.back().get());
-    }
-    ImGui::PopID();
-    ImGui::PushID("Add Penrose");
-    if(ImGui::Button("Add Penrose")){
-        LOG_CONSOLE("Added Penrose");
-        scene->AddQuasiCrystal(Penrose());
-        scene->ActiveQuasiCrystal(scene->quacries_.back().get());
-    }
-    ImGui::PopID();
     ImGui::Separator();
 }
 
@@ -104,16 +89,15 @@ void QuasiCrystalsSidebar::WindowControl()
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
 
     if (auto quacry = dynamic_cast<Quasicrystal22*>(scene->ActiveQuasiCrystal())){ // ImGui::TreeNode("Modify Lattice and Window") &&
-            auto window = quacry->window_.get();
 
-            static int selected_pattern = quacry->patterns_.size();
+            static long selected_pattern = quacry->patterns_.size();
             for (auto b = std::begin(quacry->patterns_), 
                  c = std::begin(quacry->patterns_),
                  e = std::end(quacry->patterns_); b<=e; ++b)
             {
-                int n = std::distance(c,b);
+                long n = std::distance(c,b);
                 char buf[32];
-                if(b!=e) sprintf(buf, "Pattern %d", n);
+                if(b!=e) sprintf(buf, "Pattern %ld", n);
                 else sprintf(buf, "No Pattern");
                 if (ImGui::Selectable(buf, selected_pattern == n)){
                     selected_pattern = n;
@@ -131,11 +115,6 @@ void SetOutsideVisibility(ViewData* data, float alpha)
     data->alpha_ = alpha;
 }
 
-void SetColorZW(ViewData* data, float* z, float* w)
-{
-    data->color_z_ = glm::make_vec4(z);
-    data->color_w_ = glm::make_vec4(w);
-}
 
 void SetPointSize(ViewData* data, float size)
 {

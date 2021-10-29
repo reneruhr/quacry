@@ -3,4 +3,3 @@
 namespace quacry{
     Quasicrystal22 AmmannBeenker();
 }
-

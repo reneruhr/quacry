@@ -1,12 +1,14 @@
 #include "quasicrystal.h"
+
+#include <utility>
 #include "math/LLL.h"
 
 namespace quacry{
 using Mat4 = glm::mat4;
 
 Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window, std::string name, SampleSize sample)
-    : Lattice(basis), PointSet4(sample), Quasicrystal(name),
-      window_(std::make_unique<Window2>(window)),
+    : Lattice(basis), PointSet4(std::move(sample)), Quasicrystal(std::move(name)),
+      window_(std::make_unique<Window2>(std::move(window))),
     view_data_(std::make_unique<ViewData>()),
      g_(basis)
 {
@@ -14,8 +16,8 @@ Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window, std::string name, S
 }
 
 Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window, SampleSize sample)
-    : Lattice(basis), PointSet4(sample),
-      window_(std::make_unique<Window2>(window)),
+    : Lattice(basis), PointSet4(std::move(sample)),
+      window_(std::make_unique<Window2>(std::move(window))),
     view_data_(std::make_unique<ViewData>()),
     g_(basis)
 {
@@ -24,7 +26,7 @@ Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window, SampleSize sample)
 
 Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window)
     : Lattice(basis), PointSet4(),
-      window_(std::make_unique<Window2>(window)),
+      window_(std::make_unique<Window2>(std::move(window))),
     view_data_(std::make_unique<ViewData>()),
     g_(basis)
 {
@@ -63,7 +65,7 @@ bool Quasicrystal23::InsideWindow(const Vec3& v)
 }
 
 Quasicrystal23::Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window)
-: RenderObject(), Quasicrystal(name), lattice_(lattice), window_temp_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), g_(lattice) 
+: RenderObject(), Quasicrystal(name), lattice_(lattice), window_temp_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), g_(lattice)
 {
     window_ = window_temp_.get();
     windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5(&sample_size_));    

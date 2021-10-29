@@ -44,7 +44,8 @@ add_executable(quacry
   src/examples/penrose.cpp
   src/examples/ammannbeenker.h
   src/examples/ammannbeenker.cpp
-
+  src/examples/quasi23.h
+  src/examples/quasi23.cpp
 
   src/math/lattice.cpp
   src/math/minkowski_embedding.cpp

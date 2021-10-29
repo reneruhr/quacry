@@ -6,9 +6,9 @@ class QuasiCrystalsSidebar: public kipod::Sidebar{
 friend class QuasiCrystalsModule;
 public:
 protected:
-    QuasiCrystalsSidebar(std::shared_ptr<kipod::RenderScene> scene) : kipod::Sidebar(scene) {}
+    explicit QuasiCrystalsSidebar(std::shared_ptr<kipod::RenderScene> scene) : kipod::Sidebar(scene) {}
 
-    virtual void SideBarContent() override;
+    void SideBarContent() override;
 
     void AddQuasiCrystal();
     void QuasiCrystalsList();

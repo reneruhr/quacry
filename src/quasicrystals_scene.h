@@ -11,8 +11,9 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
         friend class QuasiCrystalsSidebar;
         friend class QuasiCrystalsConsole;
         friend class QuasiCrystalsModule;
+        friend class QuasiCrystalsModuleMenu;
 
-        std::unordered_map<std::string, std::shared_ptr<kipod::Shader> > shaders_;
+    std::unordered_map<std::string, std::shared_ptr<kipod::Shader> > shaders_;
 
         std::unique_ptr<MeshModelModule> meshmodel_module_; 
 

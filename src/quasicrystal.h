@@ -1,4 +1,6 @@
 #pragma once
+#include <utility>
+
 #include "quasicrystals_pointset.h"
 #include "../kipod/src/modules/shapes/shape.h"
 #include "../kipod/src/modules/meshmodels/meshmodel.h"
@@ -18,9 +20,9 @@ using namespace kipod;
 struct Quasicrystal
 {
     Quasicrystal() = default;
-    Quasicrystal(const std::string& name) : name_(name){}
+    explicit Quasicrystal(std::string  name) : name_(std::move(name)){}
     std::string name_;
-    virtual ~Quasicrystal(){}
+    virtual ~Quasicrystal()= default;
 };
 
 class Quasicrystal22 : public Lattice<Basis4>, public PointSet4, public Quasicrystal
@@ -34,7 +36,7 @@ public:
     std::vector<std::unique_ptr<Window2>> patterns_;
 
     Window2* active_pattern_ = nullptr;
-    virtual void Init() override;
+    void Init() override;
 
     std::unique_ptr<ViewData> view_data_= nullptr;
 
@@ -50,7 +52,7 @@ class Quasicrystal23 :  public RenderObject, public Quasicrystal
     Mat5f transform_ = Mat5f::Identity();
     Mat5f g_ = Mat5f::Identity();
     std::unique_ptr<Window3> window_temp_;
-    Window3* window_;
+    Window3* window_{};
     SampleSize sample_size_ = { -5,5,  -5,5,  -5, 5, -5, 5, -2, 2 }; 
     std::unique_ptr<std::vector<Vec5f>> sample_; 
     std::unique_ptr<WindowedSample5> windowed_sample_;
@@ -61,7 +63,7 @@ public:
     Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window);
 
     void Init();
-    virtual void Draw() override;
+    void Draw() override;
     void Draw(Space);
     
     void MakeSample();
@@ -93,7 +95,7 @@ using Vec5i = Eigen::Matrix<int, 5, 1>;
 struct VecLess{
 bool operator()(const Vec5i& a, const Vec5i& b) const
 {
-    for(size_t i = 0; i<5; ++i)
+    for(long i = 0; i<5; ++i)
         if(a[i] > b[i]) return false;
         else if(a[i] < b[i]) return true;
     return false;
@@ -102,18 +104,18 @@ bool operator()(const Vec5i& a, const Vec5i& b) const
 
 class WindowedSample5{
     using Vec5Map = std::map<Vec5i, std::vector<int>, VecLess>;
-    SampleSize* sample_size_;
+    SampleSize* sample_size_{};
     public:
     std::unique_ptr<Vec5Map> sample_;
     WindowedSample5() = default;
-    WindowedSample5(SampleSize* s) : sample_size_(s), sample_(std::make_unique<Vec5Map>()){}
-    void Add(const Vec5i& index){ sample_->insert({index, {}}); }
-    bool Get(const Vec5i& index){ auto res = sample_->find(index);
+    explicit WindowedSample5(SampleSize* s) : sample_size_(s), sample_(std::make_unique<Vec5Map>()){}
+    void Add(const Vec5i& index) const{ sample_->insert({index, {}}); }
+    bool Get(const Vec5i& index) const{ auto res = sample_->find(index);
                                    if(res!=sample_->end()) return true;
                                    else return false; } 
-    auto Neighbors(const Vec5i& index) -> std::vector<int>{
+    auto Neighbors(const Vec5i& index) const -> std::vector<int>{
         std::vector<int> neighbors = {};
-        for(size_t i = 0; i<5;  ++i){
+        for(int i = 0; i<5;  ++i){
             Vec5i v(0,0,0,0,0);
             v[i] = 1;
             if(Get(index+v)) neighbors.push_back( i );

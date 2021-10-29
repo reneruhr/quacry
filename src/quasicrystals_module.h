@@ -7,7 +7,7 @@ namespace quacry{
 class QuasiCrystalsModule : public kipod::Module
 {
 public:
-    QuasiCrystalsModule(std::string name, int width = 1024, int height = 768);
+    explicit QuasiCrystalsModule(std::string name, int width = 1024, int height = 768);
     auto GetScene() -> QuasiCrystalsScene*;
 };
 
@@ -18,7 +18,7 @@ class QuasiCrystalsModuleMenu : public kipod::MenuModule
 protected:
     void Draw() override;
 public:
-    QuasiCrystalsModuleMenu(QuasiCrystalsScene* scene)
+    explicit QuasiCrystalsModuleMenu(QuasiCrystalsScene* scene)
         : scene_(scene){}
 };
 }

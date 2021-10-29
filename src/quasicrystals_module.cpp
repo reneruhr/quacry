@@ -2,6 +2,8 @@
 #include "quasicrystals_sidebar.h"
 #include "quasicrystals_scene.h"
 #include "quasicrystals_console.h"
+#include "quasicrystals_examples.h"
+#include <memory>
 namespace quacry{
 
 QuasiCrystalsModule::QuasiCrystalsModule(std::string name, int width, int height) : Module(name)
@@ -20,7 +22,20 @@ auto QuasiCrystalsModule::GetScene() -> QuasiCrystalsScene*
 
 void QuasiCrystalsModuleMenu::Draw(){
     if (ImGui::BeginMenu("Examples")) {
-        if(ImGui::MenuItem("Example 1" ,  "", true)){
+        if(ImGui::MenuItem("Ammann-Beenker" ,  "", true)){
+            LOG_CONSOLE("Added Ammann Beenker");
+            scene_->AddQuasiCrystal(AmmannBeenker());
+            scene_->ActiveQuasiCrystal(scene_->quacries_.back().get());
+        }
+        else if(ImGui::MenuItem("Penrose",  "", true)){
+            LOG_CONSOLE("Added Penrose");
+            scene_->AddQuasiCrystal(Penrose());
+            scene_->ActiveQuasiCrystal(scene_->quacries_.back().get());
+        }
+        else if(ImGui::MenuItem("Quasicrystal23 Cubic Window",  "", true)){
+            LOG_CONSOLE("Added Cubic Quasicrystal");
+            scene_->AddQuasiCrystal(MakeGenericQuasi23());
+            scene_->ActiveQuasiCrystal(scene_->quacries_.back().get());
         }
         ImGui::EndMenu();
     }
