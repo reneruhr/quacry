@@ -13,9 +13,9 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
         friend class QuasiCrystalsModule;
         friend class QuasiCrystalsModuleMenu;
 
-    std::unordered_map<std::string, std::shared_ptr<kipod::Shader> > shaders_;
+        std::unordered_map<std::string, std::shared_ptr<kipod::Shader> > shaders_;
 
-        std::unique_ptr<MeshModelModule> meshmodel_module_; 
+        std::unique_ptr<MeshModelModule> meshmodel_module_;
 
         using QuasiCrystalContainer = std::vector<std::unique_ptr<Quasicrystal>>;
         using Projection = kipod::RenderCamera;
@@ -42,6 +42,8 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
         void SetUniformWindow(Projection *projection, Quasicrystal22 *quacry);
         void SetUniformPattern(Projection *projection, Quasicrystal22 *quacry);
         void SetUniformQuasicrystal23(Projection *projection, Quasicrystal23 *quacry, Space space);
+
+        void UpdateQuasicrystal() { LOG_CONSOLE("Called UpdateQuasicrystal function"); }
 public:
         QuasiCrystalsScene(int width, int height);
         QuasiCrystalsScene(QuasiCrystalsScene&) = delete;

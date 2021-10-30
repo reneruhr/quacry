@@ -140,7 +140,7 @@ void QuasiCrystalsScene::SetUniformInternal(Projection *projection, Quasicrystal
     shader->SetUniform<glm::mat4>("pv",  *projection);
     shader->SetUniform<glm::mat4>("transform", quacry->g_);
 
-    GLuint shape = glGetUniformLocation(*shader, "shape");
+    GLint shape = glGetUniformLocation(*shader, "shape");
     glUniform2fv(shape, window->NumberEdges(), &window->transformed_vertices_[0][0]);
 
     shader->SetUniform<int>("n", window->NumberEdges());
@@ -155,12 +155,12 @@ void QuasiCrystalsScene::SetUniformPhysical(Projection *projection, Quasicrystal
 
     auto shader = shaders_["Quasi Physical"];
 
-    GLuint shape = glGetUniformLocation(*shader, "shape");
+    GLint shape = glGetUniformLocation(*shader, "shape");
     glUniform2fv(shape, window->NumberVertices(), &window->transformed_vertices_[0][0]);
 
     if(pattern) {
         shader->SetUniform<int>("n_pattern", pattern->NumberVertices());
-        GLuint pattern_id = glGetUniformLocation(*shader, "pattern");
+        GLint pattern_id = glGetUniformLocation(*shader, "pattern");
         glUniform2fv(pattern_id , pattern->NumberVertices(), &pattern->transformed_vertices_[0][0]);
     }else
         shader->SetUniform<int>("n_pattern", 0);
@@ -190,7 +190,7 @@ void QuasiCrystalsScene::SetUniformPhysicalWithEdges(Projection *projection, Qua
 
     auto shader = shaders_["Quasi Physical with Edges"];
 
-    GLuint shape = glGetUniformLocation(*shader, "shape");
+    GLint shape = glGetUniformLocation(*shader, "shape");
     glUniform2fv(shape, window->NumberEdges(), &window->transformed_vertices_[0][0]);
 
     shader->SetUniform<int>("n", window->NumberEdges());
@@ -344,6 +344,9 @@ void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal23 &&quacry)
                 std::move(quacry)));
     auto qcry = static_cast<Quasicrystal23*>(quacries_.back().get());
 
+    auto win = qcry->GetWindow();
+    win->world_->move_sink_.connect<&QuasiCrystalsScene::UpdateQuasicrystal>(*this);
+
     GetMeshModelScene()->AddModel(qcry->GiveUpWindow());
 }
 
@@ -355,6 +358,7 @@ auto QuasiCrystalsScene::ActiveQuasiCrystal() -> Quasicrystal*
 void QuasiCrystalsScene::ActiveQuasiCrystal(Quasicrystal * active)
 {
     active_quacry_ = active;
+    if (auto quasi23 = dynamic_cast<Quasicrystal23 *>(active)) GetMeshModelScene()->SetActiveModel(quasi23->GetWindow());
 }
 
 bool QuasiCrystalsScene::HasQuasiCrystal()
