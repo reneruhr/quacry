@@ -106,6 +106,9 @@ void QuasiCrystalsSidebar::WindowControl()
             }
     }else if (auto quacry = dynamic_cast<Quasicrystal23*>(scene->ActiveQuasiCrystal())){ // ImGui::TreeNode("Modify Lattice and Window") &&
         scene->GetMeshModelModule()->DrawSidebarContent();
+
+        kipod::Gui::Checkbox(scene->mode_toggles_["Draw Rejected"]);
+
     }
     }
 }

@@ -22,17 +22,17 @@ auto QuasiCrystalsModule::GetScene() -> QuasiCrystalsScene*
 
 void QuasiCrystalsModuleMenu::Draw(){
     if (ImGui::BeginMenu("Examples")) {
-        if(ImGui::MenuItem("Ammann-Beenker" ,  "", true)){
+        if(ImGui::MenuItem("Ammann-Beenker" ,  "", false)){
             LOG_CONSOLE("Added Ammann Beenker");
             scene_->AddQuasiCrystal(AmmannBeenker());
             scene_->ActiveQuasiCrystal(scene_->quacries_.back().get());
         }
-        else if(ImGui::MenuItem("Penrose",  "", true)){
+        else if(ImGui::MenuItem("Penrose",  "", false)){
             LOG_CONSOLE("Added Penrose");
             scene_->AddQuasiCrystal(Penrose());
             scene_->ActiveQuasiCrystal(scene_->quacries_.back().get());
         }
-        else if(ImGui::MenuItem("Quasicrystal23 Cubic Window",  "", true)){
+        else if(ImGui::MenuItem("Quasicrystal23 Cubic Window",  "", false)){
             LOG_CONSOLE("Added Cubic Quasicrystal");
             scene_->AddQuasiCrystal(MakeGenericQuasi23());
             scene_->ActiveQuasiCrystal(scene_->quacries_.back().get());

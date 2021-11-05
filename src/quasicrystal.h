@@ -12,7 +12,7 @@ using Window3 = kipod::MeshModels::MeshModel;
 struct ViewData;
 class WindowedSample5;
 
-
+using Mat4 = glm::mat4;
 using Mat5f = Eigen::Matrix<float,5,5>;
 using Vec5f = Eigen::Matrix<float,5,1>;
 using namespace kipod;
@@ -44,7 +44,7 @@ public:
     Basis4 g_;
 };
 
-enum class Space { Physical, Internal };
+enum class Space { Physical, Internal, Rejected };
 
 class Quasicrystal23 :  public RenderObject, public Quasicrystal
 {
@@ -54,20 +54,23 @@ class Quasicrystal23 :  public RenderObject, public Quasicrystal
     std::unique_ptr<Window3> window_temp_;
     Window3* window_{};
     SampleSize sample_size_ = { -5,5,  -5,5,  -5, 5, -5, 5, -2, 2 }; 
-    std::unique_ptr<std::vector<Vec5f>> sample_; 
+    std::unique_ptr<std::vector<Vec5f>> sample_;
+    std::unique_ptr<std::vector<Vec5f>> sample_rejected_;
     std::unique_ptr<WindowedSample5> windowed_sample_;
     std::unique_ptr<RenderObject> internal_;
 
 public:
     Quasicrystal23() = default;
     Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window);
+    Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window, SampleSize  size_);
 
     void Init();
     void Draw() override;
     void Draw(Space);
     
     void MakeSample();
-    bool InsideWindow(const Vec3& v);
+    void Resample();
+    bool InsideWindow(const Vec3 &v, const Mat4 &g);
     Mat5f& GetBasis() { return lattice_; };
     std::unique_ptr<ViewData> view_data_= nullptr;
     Window3* GetWindow() { return window_; } 

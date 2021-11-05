@@ -43,7 +43,7 @@ class QuasiCrystalsScene :  public kipod::Listener, public kipod::Controls, publ
         void SetUniformPattern(Projection *projection, Quasicrystal22 *quacry);
         void SetUniformQuasicrystal23(Projection *projection, Quasicrystal23 *quacry, Space space);
 
-        void UpdateQuasicrystal() { LOG_CONSOLE("Called UpdateQuasicrystal function"); }
+        void UpdateQuasicrystal();
 public:
         QuasiCrystalsScene(int width, int height);
         QuasiCrystalsScene(QuasiCrystalsScene&) = delete;
