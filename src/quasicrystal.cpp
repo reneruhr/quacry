@@ -1,10 +1,13 @@
 #include "quasicrystal.h"
-
 #include <utility>
 #include "math/LLL.h"
 
+
+
+
 namespace quacry{
 using Mat4 = glm::mat4;
+using namespace kipod::MeshModels;
 
 Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window, std::string name, SampleSize sample)
     : Lattice(basis), PointSet4(std::move(sample)), Quasicrystal(std::move(name)),
@@ -17,15 +20,6 @@ Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window, std::string name, S
 
 Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window, SampleSize sample)
     : Lattice(basis), PointSet4(std::move(sample)),
-      window_(std::make_unique<Window2>(std::move(window))),
-    view_data_(std::make_unique<ViewData>()),
-    g_(basis)
-{
-    Init();
-}
-
-Quasicrystal22::Quasicrystal22(Basis4 basis, Window2 window)
-    : Lattice(basis), PointSet4(),
       window_(std::make_unique<Window2>(std::move(window))),
     view_data_(std::make_unique<ViewData>()),
     g_(basis)
@@ -51,26 +45,26 @@ void Quasicrystal22::ApplyLLL()
    Eigen::Matrix4f reduced_trans = LLL(mf);
    g_ = glm::make_mat4(reduced_trans.data());
 }
- 
+
+
+
 bool Quasicrystal23::InsideWindow(const Vec3 &v, const Mat4 &g)
 {
-    auto Inside = [this, g](const Vec3& d, int n){
-       auto [a,b,c] = window_->Triangle(n); 
-       Mat4 in( g*Vec4(a,1), g*Vec4(b,1), g*Vec4(c,1), Vec4(d,1));
-       return determinant(in) > 0;
-        };
+    LOG_DEBUG("Test Point {} {} {}", v.x, v.y ,v.z);
+    auto Inside = [this, &g](const Vec3& v, int n){
+        auto Apply_g = [&g](const Vec3& w) { auto ww = g*Vec4(w,1); return ww/ww.w; };
+        auto Apply_g_to_T = [&g, &Apply_g](Triangle3f& T) {  T.a = Apply_g(T.a); T.b = Apply_g(T.b); T.c = Apply_g(T.c);   };
+        auto T = window_->Triangle(n);
+        Apply_g_to_T(T);
+        LOG_DEBUG("Test g*Triangle {} ", T);
+        Mat4 in( Apply_g(T.a), Apply_g(T.b), Apply_g(T.c), Vec4(v,1));
+        auto det = VolumeTetrahedron(T, v);
+        LOG_DEBUG("Determinant {}", det);
+        return det > 0;
+    };
     for(int i = 0, e = window_->NumberOfTriangles(); i<e; ++i)
         if(!Inside(v, i)) return false; 
     return true;
-}
-
-Quasicrystal23::Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window)
-: RenderObject(), Quasicrystal(name), lattice_(lattice), window_temp_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), g_(lattice)
-{
-    window_ = window_temp_.get();
-    windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5(&sample_size_));    
-    MakeSample();
-    Init();
 }
 
 Quasicrystal23::Quasicrystal23(const std::string &name, const Mat5f &lattice, const Window3 &window,
@@ -90,6 +84,7 @@ void Quasicrystal23::MakeSample()
     sample_ = std::make_unique<std::vector<Vec5f>>();
     sample_rejected_ = std::make_unique<std::vector<Vec5f>>();
     auto g = window_->Transform();
+
     for(int x0= sample_size_[0]; x0< sample_size_[1]; ++x0)
     for(int x1= sample_size_[2]; x1< sample_size_[3]; ++x1)
     for(int x2= sample_size_[4]; x2< sample_size_[5]; ++x2)
@@ -115,7 +110,6 @@ void Quasicrystal23::Init()
     layout->SetupPointSet23(sample_.get());
     AddLayout(name, std::move(*layout));
 
-
     std::string name_rejected = "Quasicrystal23 Rejected";
     auto layout_rejected = new kipod::GLRenderLayout;
     layout_rejected->SetupPointSet23(sample_rejected_.get());
@@ -125,7 +119,7 @@ void Quasicrystal23::Init()
     layout_internal->SetupPointSet23(sample_.get());
     internal_->AddLayout(name, std::move(*layout_internal));
 */
-     }
+ }
 
 void Quasicrystal23::Draw()
 {
@@ -141,6 +135,11 @@ void Quasicrystal23::Draw(Space space)
 void Quasicrystal23::Resample()
 {
     MakeSample();
+    Relayout();
+}
+
+void Quasicrystal23::Relayout()
+{
     auto layout = new kipod::GLRenderLayout;
     layout->SetupPointSet23(sample_.get());
     ChangeLayout("Quasicrystal23", std::move(*layout));

@@ -1,5 +1,6 @@
 #pragma once
 #include <utility>
+#include <ostream>
 
 #include "quasicrystals_pointset.h"
 #include "../kipod/src/modules/shapes/shape.h"
@@ -28,8 +29,7 @@ struct Quasicrystal
 class Quasicrystal22 : public Lattice<Basis4>, public PointSet4, public Quasicrystal
 {
 public:    
-    Quasicrystal22(Basis4 basis, Window2 window);
-    Quasicrystal22(Basis4 basis, Window2 window, SampleSize sample_size);
+    Quasicrystal22(Basis4 basis, Window2 window, SampleSize sample_size = {-5,5,-5,5,-5,5,-5,5});
     Quasicrystal22(Basis4 basis, Window2 window, std::string name, SampleSize sample_size);
 
     std::unique_ptr<Window2> window_;
@@ -61,8 +61,7 @@ class Quasicrystal23 :  public RenderObject, public Quasicrystal
 
 public:
     Quasicrystal23() = default;
-    Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window);
-    Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window, SampleSize  size_);
+    Quasicrystal23(const std::string& name, const Mat5f& lattice, const Window3& window, SampleSize  size = {-5,5, -5,5, -5,5, -5,5, -5,5});
 
     void Init();
     void Draw() override;
@@ -70,11 +69,13 @@ public:
     
     void MakeSample();
     void Resample();
+    void Relayout();
     bool InsideWindow(const Vec3 &v, const Mat4 &g);
     Mat5f& GetBasis() { return lattice_; };
     std::unique_ptr<ViewData> view_data_= nullptr;
     Window3* GetWindow() { return window_; } 
     std::unique_ptr<Window3> GiveUpWindow() { return std::move(window_temp_); }
+
 };
 
 struct ViewData{
