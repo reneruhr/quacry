@@ -2,9 +2,6 @@
 #include <utility>
 #include "math/LLL.h"
 
-
-
-
 namespace quacry{
 using Mat4 = glm::mat4;
 using namespace kipod::MeshModels;
@@ -53,17 +50,16 @@ bool Quasicrystal23::InsideWindow(const Vec3 &v, const Mat4 &g)
     LOG_DEBUG("Test Point {} {} {}", v.x, v.y ,v.z);
     auto Inside = [this, &g](const Vec3& v, int n){
         auto Apply_g = [&g](const Vec3& w) { auto ww = g*Vec4(w,1); return ww/ww.w; };
-        auto Apply_g_to_T = [&g, &Apply_g](Triangle3f& T) {  T.a = Apply_g(T.a); T.b = Apply_g(T.b); T.c = Apply_g(T.c);   };
+        auto Apply_g_to_T = [&Apply_g](Triangle3f& T) {  T.a = Apply_g(T.a); T.b = Apply_g(T.b); T.c = Apply_g(T.c);   };
         auto T = window_->Triangle(n);
         Apply_g_to_T(T);
         LOG_DEBUG("Test g*Triangle {} ", T);
-        Mat4 in( Apply_g(T.a), Apply_g(T.b), Apply_g(T.c), Vec4(v,1));
-        auto det = VolumeTetrahedron(T, v);
+        float det = VolumeTetrahedron(T, v);
         LOG_DEBUG("Determinant {}", det);
-        return det > 0;
+        return det >= 0.f;
     };
     for(int i = 0, e = window_->NumberOfTriangles(); i<e; ++i)
-        if(!Inside(v, i)) return false; 
+        if(!Inside(v, i)) return false;
     return true;
 }
 
@@ -72,7 +68,12 @@ Quasicrystal23::Quasicrystal23(const std::string &name, const Mat5f &lattice, co
 : RenderObject(), Quasicrystal(name), lattice_(lattice), window_temp_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), g_(lattice), sample_size_(std::move(size_))
 {
     window_ = window_temp_.get();
-    windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5(&sample_size_));
+    auto correct = TestIfCCWOriented(*window_);
+    LOG("Testing window mesh for correct orientation: {}", correct);
+    if(!correct) {
+        LOG("No problem, we fix it");
+        FixCCWOriented(*window_);
+    }
     MakeSample();
     Init();
 }
@@ -83,6 +84,7 @@ void Quasicrystal23::MakeSample()
     LOG_INFO("Creating Sample of {} elements", total);
     sample_ = std::make_unique<std::vector<Vec5f>>();
     sample_rejected_ = std::make_unique<std::vector<Vec5f>>();
+    windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5(&sample_size_));
     auto g = window_->Transform();
 
     for(int x0= sample_size_[0]; x0< sample_size_[1]; ++x0)

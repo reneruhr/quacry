@@ -34,7 +34,7 @@ void QuasiCrystalsModuleMenu::Draw(){
         }
         else if(ImGui::MenuItem("Quasicrystal23 Cubic Window",  "", false)){
             LOG_CONSOLE("Added Cubic Quasicrystal");
-            scene_->AddQuasiCrystal(MakeGenericQuasi23());
+            scene_->AddQuasiCrystal(MakeGenericQuasi23(2.f));
             scene_->ActiveQuasiCrystal(scene_->quacries_.back().get());
         }
         ImGui::EndMenu();
@@ -45,7 +45,16 @@ void QuasiCrystalsModuleMenu::Draw(){
             scene_->Toggle("Take Screenshot").Switch();
         }
         if(ImGui::SliderInt("Frames per Screenshot", &frames_per_shot, 1, 120)) {
-                scene_->SetFramesPerScreenshot(frames_per_shot);
+            scene_->SetFramesPerScreenshot(frames_per_shot);
+        }
+        ImGui::EndMenu();
+    }
+    if( ImGui::BeginMenu("Window")){
+        if(ImGui::MenuItem("Pause Window Updates" ,  "", scene_->Toggle("Pause Window Updates"))){
+            scene_->Toggle("Pause Window Updates").Switch();
+        }
+        if(ImGui::MenuItem("Update now", "", false)){
+            scene_->UpdateQuasicrystal(true);
         }
         ImGui::EndMenu();
     }

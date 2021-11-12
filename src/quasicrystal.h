@@ -73,9 +73,11 @@ public:
     bool InsideWindow(const Vec3 &v, const Mat4 &g);
     Mat5f& GetBasis() { return lattice_; };
     std::unique_ptr<ViewData> view_data_= nullptr;
-    Window3* GetWindow() { return window_; } 
-    std::unique_ptr<Window3> GiveUpWindow() { return std::move(window_temp_); }
+    Window3* GetWindow() { return window_; }
 
+    //Todo Clean Up this Interface.
+    std::unique_ptr<Window3> GiveUpWindow() { return std::move(window_temp_); }
+    void UpdateWindowPointer(Window3* window) { window_ = window; };
 };
 
 struct ViewData{

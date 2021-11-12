@@ -38,6 +38,7 @@ void QuasiCrystalsScene::SetupOptions()
 {
     Add(kipod::ModeToggle("Take Screenshot", false));
     Add(kipod::ModeToggle("Draw Rejected", false));
+    Add(kipod::ModeToggle("Pause Window Updates", false));
 }
 
 void QuasiCrystalsScene::SetupMeshModelModule()
@@ -349,12 +350,14 @@ void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal22 &&quacry)
 void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal23 &&quacry)
 {
     quacries_.emplace_back( std::make_unique<Quasicrystal23>( std::move(quacry)));
-    auto qcry = static_cast<Quasicrystal23 *>(quacries_.back().get());
+    auto cur_quacry = static_cast<Quasicrystal23 *>(quacries_.back().get());
 
-    auto win = qcry->GetWindow();
-    win->world_->move_sink_.connect<&QuasiCrystalsScene::UpdateQuasicrystal>(*this);
+    auto window = cur_quacry->GetWindow();
+    window->world_->move_sink_.connect<&QuasiCrystalsScene::UpdateQuasicrystal>(*this);
+    window->local_->scale_sink_.connect<&QuasiCrystalsScene::UpdateQuasicrystal>(*this);
 
-    GetMeshModelScene()->AddModel(qcry->GiveUpWindow());
+    cur_quacry->UpdateWindowPointer( GetMeshModelScene()->AddModel(cur_quacry->GiveUpWindow()) );
+
 }
 
 auto QuasiCrystalsScene::ActiveQuasiCrystal() -> Quasicrystal *
@@ -403,11 +406,12 @@ void QuasiCrystalsScene::SetUniformPattern(Projection *projection, Quasicrystal2
     shaders_["Shape Pattern"]->SetUniform<float>("depth", pattern->depth_ + 0.1);
 }
 
-void QuasiCrystalsScene::UpdateQuasicrystal()
+void QuasiCrystalsScene::UpdateQuasicrystal(bool force)
 {
     LOG_CONSOLE("Called UpdateQuasicrystal function");
-    if (auto quacry = dynamic_cast<Quasicrystal23 *>(ActiveQuasiCrystal())) {
-            quacry->MakeSample();
+    if (auto quacry = dynamic_cast<Quasicrystal23 *>(ActiveQuasiCrystal()) ) {
+        if(force || !Toggle("Pause Window Updates"))
+            quacry->Resample();
     }
 }
 }
