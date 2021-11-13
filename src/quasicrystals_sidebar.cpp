@@ -31,6 +31,7 @@ void QuasiCrystalsSidebar::QuasiCrystalsList()
     auto scene = std::static_pointer_cast<QuasiCrystalsScene>(scene_);
     auto& quacries = scene->quacries_;
     static int selected_quacry = 0;
+    ImGui::Text("Loaded Quasicrystals:");
     if(scene->HasQuasiCrystal()){
         auto current_quacry = std::begin(quacries);
         for (int n = 0; n <  (int)quacries.size(); n++, ++current_quacry)
@@ -43,7 +44,8 @@ void QuasiCrystalsSidebar::QuasiCrystalsList()
                 }
         }
         ImGui::Separator();
-    }
+    }else
+        ImGui::Text("Nothing loaded.");
 }
 
 void QuasiCrystalsSidebar::LatticeControl()

@@ -356,8 +356,8 @@ void QuasiCrystalsScene::AddQuasiCrystal(Quasicrystal23 &&quacry)
     window->world_->move_sink_.connect<&QuasiCrystalsScene::UpdateQuasicrystal>(*this);
     window->local_->scale_sink_.connect<&QuasiCrystalsScene::UpdateQuasicrystal>(*this);
 
+    GetMeshModelScene()->ClearScreen();
     cur_quacry->UpdateWindowPointer( GetMeshModelScene()->AddModel(cur_quacry->GiveUpWindow()) );
-
 }
 
 auto QuasiCrystalsScene::ActiveQuasiCrystal() -> Quasicrystal *
@@ -368,8 +368,10 @@ auto QuasiCrystalsScene::ActiveQuasiCrystal() -> Quasicrystal *
 void QuasiCrystalsScene::ActiveQuasiCrystal(Quasicrystal *active)
 {
     active_quacry_ = active;
-    if (auto quasi23 = dynamic_cast<Quasicrystal23 *>(active))
-        GetMeshModelScene()->SetActiveModel(quasi23->GetWindow());
+    if (auto quasi23 = dynamic_cast<Quasicrystal23 *>(active)) {
+        GetMeshModelScene()->ClearScreen();
+        GetMeshModelScene()->SetActiveModel(quasi23->GetWindow(), true);
+    }
 }
 
 bool QuasiCrystalsScene::HasQuasiCrystal()
