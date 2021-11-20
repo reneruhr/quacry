@@ -112,6 +112,12 @@ void Quasicrystal23::Init()
     layout->SetupPointSet23(sample_.get());
     AddLayout(name, std::move(*layout));
 
+    std::string name_edges = "Quasicrystal23 Edges";
+    auto layout_edges = new kipod::GLRenderLayout;
+    auto buffer10 = windowed_sample_->AsBuffer();
+    layout_edges->SetupEdges23(buffer10.get());
+    AddLayout(name_edges, std::move(*layout_edges));
+
     std::string name_rejected = "Quasicrystal23 Rejected";
     auto layout_rejected = new kipod::GLRenderLayout;
     layout_rejected->SetupPointSet23(sample_rejected_.get());
@@ -123,9 +129,16 @@ void Quasicrystal23::Init()
 */
  }
 
-void Quasicrystal23::Draw()
+void Quasicrystal23::Draw(){
+    RenderObject::Draw("Quasicrystal23");
+}
+
+void Quasicrystal23::Draw(Geometry geometry = Geometry::Points)
 {
-   RenderObject::Draw("Quasicrystal23");
+    if(geometry == Geometry::Points)
+        RenderObject::Draw("Quasicrystal23");
+    if(geometry == Geometry::Edges)
+        RenderObject::Draw("Quasicrystal23 Edges");
 }
 
 void Quasicrystal23::Draw(Space space)
@@ -146,9 +159,48 @@ void Quasicrystal23::Relayout()
     layout->SetupPointSet23(sample_.get());
     ChangeLayout("Quasicrystal23", std::move(*layout));
 
+    auto layout_edges = new kipod::GLRenderLayout;
+    auto buffer10 = windowed_sample_->AsBuffer();
+    layout_edges->SetupEdges23(buffer10.get());
+    ChangeLayout("Quasicrystal23 Edges", std::move(*layout_edges));
+
     auto layout_rejected = new kipod::GLRenderLayout;
     layout_rejected->SetupPointSet23(sample_rejected_.get());
     ChangeLayout("Quasicrystal23 Rejected", std::move(*layout_rejected));
 }
 
+//Encode Neighbors in a single Vec5i vector. x_i = {-1,0,1, 2="1"+"-1"}
+
+auto WindowedSample5::Neighbors(const Vec5i &index) const -> std::vector<int>
+{
+    std::vector<int> neighbors = {0,0,0,0,0} ;
+    for(int i = 0; i<5;  ++i){
+        Vec5i v(0,0,0,0,0);
+        v[i] = 1;
+        if(Has(index - v)) neighbors[i] = -1;
+        if(Has(index + v)) neighbors[i] =  1 + neighbors[i]*neighbors[i];
+    }
+    return neighbors;
+}
+
+bool WindowedSample5::Has(const Vec5i &index) const
+{
+    auto res = sample_->find(index);
+    if(res!=sample_->end()) return true;
+    else return false;
+}
+
+void WindowedSample5::Add(const Vec5i &index) const
+{
+    sample_->insert({index, {}});
+}
+
+auto WindowedSample5::AsBuffer() -> std::unique_ptr<std::vector<Vec10f>>
+{
+    auto sample_with_neighbors = std::make_unique<std::vector<Vec10f>>();
+    for (const auto &v: *sample_)
+        sample_with_neighbors->emplace_back(Vec10f(v.first[0], v.first[1], v.first[2], v.first[3], v.first[4],
+                                             v.second[0], v.second[1], v.second[2], v.second[3], v.second[4]));
+    return sample_with_neighbors;
+}
 }

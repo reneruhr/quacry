@@ -13,9 +13,11 @@ using Window3 = kipod::MeshModels::MeshModel;
 struct ViewData;
 class WindowedSample5;
 
+using Vec4= glm::vec4;
 using Mat4 = glm::mat4;
 using Mat5f = Eigen::Matrix<float,5,5>;
 using Vec5f = Eigen::Matrix<float,5,1>;
+using Vec10f = Eigen::Matrix<float,10,1>;
 using namespace kipod;
 
 struct Quasicrystal
@@ -45,6 +47,8 @@ public:
 };
 
 enum class Space { Physical, Internal, Rejected };
+enum class Geometry { Points, Edges };
+
 
 class Quasicrystal23 :  public RenderObject, public Quasicrystal
 {
@@ -65,6 +69,7 @@ public:
 
     void Init();
     void Draw() override;
+    void Draw(Geometry);
     void Draw(Space);
     
     void MakeSample();
@@ -115,20 +120,11 @@ class WindowedSample5{
     std::unique_ptr<Vec5Map> sample_;
     WindowedSample5() = default;
     explicit WindowedSample5(SampleSize* s) : sample_size_(s), sample_(std::make_unique<Vec5Map>()){}
-    void Add(const Vec5i& index) const{ sample_->insert({index, {}}); }
-    bool Get(const Vec5i& index) const{ auto res = sample_->find(index);
-                                   if(res!=sample_->end()) return true;
-                                   else return false; } 
-    auto Neighbors(const Vec5i& index) const -> std::vector<int>{
-        std::vector<int> neighbors = {};
-        for(int i = 0; i<5;  ++i){
-            Vec5i v(0,0,0,0,0);
-            v[i] = 1;
-            if(Get(index+v)) neighbors.push_back( i );
-            if(Get(index-v)) neighbors.push_back(-i );
-       }
-      return neighbors; 
-    }
+    void Add(const Vec5i& index) const;
+    bool Has(const Vec5i& index) const;
+    auto Neighbors(const Vec5i& index) const -> std::vector<int>;
+
+    auto AsBuffer() -> std::unique_ptr<std::vector<Vec10f>>;
 };
 
 }

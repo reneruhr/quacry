@@ -220,6 +220,11 @@ void QuasiCrystalsSidebar::ViewOptions()
     } else if ( auto quacry = dynamic_cast<Quasicrystal23*>(scene->ActiveQuasiCrystal())){
         auto data = quacry->view_data_.get();
 
+        static bool edges = false;
+        if(ImGui::Checkbox("Show edges", &edges)){
+            data->edges_ = edges;
+        }
+
         static ImVec4 color= ImVec4(data->color_[0],data->color_[1],data->color_[2],data->color_[3]);
         if (ImGui::ColorEdit4("color##color", (float*)&color, 0)){
             auto temp =  glm::make_vec4((float*)&color);
