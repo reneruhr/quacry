@@ -139,7 +139,7 @@ void QuasiCrystalsSidebar::ViewOptions()
         static float point_size_window = data->point_size_window_;
 
         static bool edges = false;
-        if(ImGui::Checkbox("Show edges", &edges)){
+        if(ImGui::Checkbox("Show edges ##22", &edges)){
             data->edges_ = edges;
         }
 
@@ -221,8 +221,13 @@ void QuasiCrystalsSidebar::ViewOptions()
         auto data = quacry->view_data_.get();
 
         static bool edges = false;
-        if(ImGui::Checkbox("Show edges", &edges)){
+        if(ImGui::Checkbox("Show edges ##23", &edges)){
             data->edges_ = edges;
+        }
+
+        static bool pointsmat5 = false;
+        if(ImGui::Checkbox("Use PointsMat5", &pointsmat5)){
+            data->pointsmat5_ = pointsmat5;
         }
 
         static ImVec4 color= ImVec4(data->color_[0],data->color_[1],data->color_[2],data->color_[3]);

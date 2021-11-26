@@ -39,7 +39,7 @@ void main()
 
     vec4 point = vec4(v,0,1);
     vec4 pv_point = pv*point;
-    vert_color = vec4(1);
+    vert_color = vec4(1,0,0,1);
 
 
     for(int i = 0; i<5; i++){
@@ -64,7 +64,7 @@ void main()
                 EmitVertex();
                 EndPrimitive();
             }
-            }
+        }
         else{
             int j = i-2;
             if( abs(abs(nbs2[0][j])-1) < 0.001) {

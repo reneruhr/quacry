@@ -47,7 +47,7 @@ public:
 };
 
 enum class Space { Physical, Internal, Rejected };
-enum class Geometry { Points, Edges };
+enum class Geometry { Points, Edges, PointsMat5 };
 
 
 class Quasicrystal23 :  public RenderObject, public Quasicrystal
@@ -97,6 +97,7 @@ struct ViewData{
     Vec4 color_ = Vec4(1.f);
 
     float depth_ = -0.7f;
+    bool pointsmat5_ = false;
     bool edges_ = false;
     bool window_shape_ = false;
     bool pattern_shape_ = false;

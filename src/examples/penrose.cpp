@@ -55,7 +55,7 @@ auto PenroseInternalPolytope(Mat5f g, const Vec5f& gamma) -> std::pair<std::vect
 auto Penrose() -> Quasicrystal23
 {
     auto [v,i] = PenroseInternalPolytope(Mat5f::Identity(), Vec5f::Constant(0.25f));
-    auto penrose = Quasicrystal23("Penrose", PenroseRotation(), MeshModel(v,i));
+    auto penrose = Quasicrystal23("Penrose", PenroseRotation(), MeshModel(v,i), {-2,2, -2,2, -2,2, -2,2, -2,2});
 
     return penrose;
 }

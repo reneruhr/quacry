@@ -137,7 +137,9 @@ void Quasicrystal23::Draw(Geometry geometry = Geometry::Points)
 {
     if(geometry == Geometry::Points)
         RenderObject::Draw("Quasicrystal23");
-    if(geometry == Geometry::Edges)
+    else if(geometry == Geometry::Edges)
+        RenderObject::Draw("Quasicrystal23 Edges");
+    else if(geometry == Geometry::PointsMat5)
         RenderObject::Draw("Quasicrystal23 Edges");
 }
 

@@ -81,6 +81,11 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_.insert({"Quasicrystal23 Points",
                      std::make_shared<kipod::Shader>("shaders/points23.vert.glsl", "shaders/points.frag.glsl",
                                                      "shaders/points23.geom.glsl")});
+
+    shaders_.insert({"Quasicrystal23 PointsMat5",
+                     std::make_shared<kipod::Shader>("shaders/points23.vert.glsl", "shaders/points.frag.glsl",
+                                                     "shaders/points23mat5.geom.glsl")});
+
     shaders_.insert({"Quasicrystal23 Edges",
                      std::make_shared<kipod::Shader>("shaders/points23.vert.glsl", "shaders/points.frag.glsl",
                                                      "shaders/edges23.geom.glsl")});
@@ -91,6 +96,18 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_["Quasicrystal23 Points"]->AttachUniform<int>("Space");
     shaders_["Quasicrystal23 Points"]->AttachUniform<int>("Geometry");
     shaders_["Quasicrystal23 Points"]->AttachUniform<float>("point_size");
+
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::mat4>("pv");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::mat4>("transform");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::vec4>("color");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<int>("Space");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<int>("Geometry");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<float>("point_size");
+
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::mat4>("g11");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::vec4>("g51");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::vec4>("g15");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<float>("g55");
 
     shaders_["Quasicrystal23 Edges"]->AttachUniform<glm::mat4>("pv");
     shaders_["Quasicrystal23 Edges"]->AttachUniform<glm::mat4>("transform");
@@ -239,7 +256,11 @@ void QuasiCrystalsScene::SetUniformQuasicrystal23Edges(Projection *projection, Q
                                                   Geometry geometry = Geometry::Edges)
 {
     auto data = quacry->view_data_.get();
-    auto shader = shaders_["Quasicrystal23 Edges"];
+    auto shader = std::shared_ptr<kipod::Shader>{};
+    if(geometry == Geometry::Edges)
+        shader = shaders_["Quasicrystal23 Edges"];
+    else if(geometry == Geometry::PointsMat5)
+        shader = shaders_["Quasicrystal23 PointsMat5"];
     shader->SetUniform<glm::mat4>("pv", *projection);
     shader->SetUniform<glm::mat4>("transform", quacry->Transform());
     shader->SetUniform<glm::vec4>("color", data->color_);
@@ -249,13 +270,13 @@ void QuasiCrystalsScene::SetUniformQuasicrystal23Edges(Projection *projection, Q
 
     auto SplitMat5f= [quacry](Mat4& g11, Vec4& g51, Vec4& g15, float& g55)
     {
-               auto& g = quacry->GetBasis();
-               for(int i=0; i<4; i++) {
-                   for (int j = 0; j < 4; j++) g11[j][i] = g(i, j);
-                   g51[i] = g(4,i);
-                   g15[i] = g(i,4);
-               }
-               g55 = g(4,4);
+        auto& g = quacry->GetBasis();
+        for(int i=0; i<4; i++) {
+            for (int j = 0; j < 4; j++) g11[j][i] = g(i, j);
+            g51[i] = g(4,i);
+            g15[i] = g(i,4);
+        }
+        g55 = g(4,4);
     };
 
     Mat4 g11; Vec4 g15,g51; float g55;
@@ -367,11 +388,22 @@ void QuasiCrystalsScene::Draw()
         if (Toggle("Take Screenshot")) TakeScreenshot("Internal", true);
 
     } else if (auto quacry = dynamic_cast<Quasicrystal23 *>(ActiveQuasiCrystal())) {
-        shaders_["Quasicrystal23 Points"]->Use();
-        SetUniformQuasicrystal23(ActiveProjection(), quacry, Space::Physical, Geometry::Points);
-        quacry->Draw();
-        if (Toggle("Take Screenshot")) TakeScreenshot("Physical", false);
+        if (!quacry->view_data_->pointsmat5_) {
+            shaders_["Quasicrystal23 Points"]->Use();
+            SetUniformQuasicrystal23(ActiveProjection(), quacry, Space::Physical, Geometry::Points);
+            quacry->Draw();
+        } else if(quacry->view_data_->pointsmat5_){
+            shaders_["Quasicrystal23 PointsMat5"]->Use();
+            SetUniformQuasicrystal23Edges(ActiveProjection(), quacry, Space::Physical, Geometry::PointsMat5);
+            quacry->Draw(Geometry::PointsMat5);
+        }
+        if (quacry->view_data_->edges_) {
+                shaders_["Quasicrystal23 Edges"]->Use();
+                SetUniformQuasicrystal23Edges(ActiveProjection(), quacry, Space::Physical, Geometry::Edges);
+                quacry->Draw(Geometry::Edges);
+        }
 
+        if (Toggle("Take Screenshot")) TakeScreenshot("Physical", false);
         framebuffers_["Internal Space"]->Bind();
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -382,11 +414,6 @@ void QuasiCrystalsScene::Draw()
         quacry->Draw(Space::Internal);
         if (Toggle("Draw Rejected")) quacry->Draw(Space::Rejected);
 
-        if (quacry->view_data_->edges_) {
-            shaders_["Quasicrystal23 Edges"]->Use();
-            SetUniformQuasicrystal23Edges(ActiveProjection(), quacry, Space::Physical, Geometry::Edges);
-            quacry->Draw(Geometry::Edges);
-        }
         GetMeshModelScene()->Draw();
 
         if (Toggle("Take Screenshot")) TakeScreenshot("Internal", true);
