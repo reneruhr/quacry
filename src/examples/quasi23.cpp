@@ -6,6 +6,6 @@ auto MakeGenericQuasi23(float scale) -> Quasicrystal23
 {
     auto window = PrimMeshModel(Primitive::Cube);
     window.local_->Scale(glm::vec3(scale));
-    return {"Cubic Window", Mat5f::Identity() , window , {-4,4, -4,4,-4,4,-4,4,-4,4}};
+    return {"Cubic Window", Mat5f::Identity() , window , {-2,2, -2,2,-2,2,-2,2,-2,2}};
 }
 }

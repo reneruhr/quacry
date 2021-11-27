@@ -3,5 +3,5 @@
 #include <Eigen/Dense>
 
 namespace quacry{
-auto MakeGenericQuasi23(float scale = 1.f) -> Quasicrystal23;
+auto MakeGenericQuasi23(float scale = 1.0f) -> Quasicrystal23;
 }

@@ -34,7 +34,7 @@ void QuasiCrystalsModuleMenu::Draw(){
         }
         else if(ImGui::MenuItem("Quasicrystal23 Cubic Window",  "", false)){
             LOG_CONSOLE("Added Cubic Quasicrystal");
-            scene_->AddQuasiCrystal(MakeGenericQuasi23(2.f));
+            scene_->AddQuasiCrystal(MakeGenericQuasi23(2.2f));
             scene_->ActiveQuasiCrystal(scene_->quacries_.back().get());
         }
         ImGui::EndMenu();

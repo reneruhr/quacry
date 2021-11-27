@@ -80,18 +80,18 @@ Quasicrystal23::Quasicrystal23(const std::string &name, const Mat5f &lattice, co
 
 void Quasicrystal23::MakeSample()
 {
-    int total = (sample_size_[1]-sample_size_[0])*(sample_size_[3]-sample_size_[2])*(sample_size_[5]-sample_size_[4])*(sample_size_[7]-sample_size_[6])*(sample_size_[9]-sample_size_[8]);
+    int total = (sample_size_[1]-sample_size_[0]+1)*(sample_size_[3]-sample_size_[2]+1)*(sample_size_[5]-sample_size_[4]+1)*(sample_size_[7]-sample_size_[6]+1)*(sample_size_[9]-sample_size_[8]+1);
     LOG_INFO("Creating Sample of {} elements", total);
     sample_ = std::make_unique<std::vector<Vec5f>>();
     sample_rejected_ = std::make_unique<std::vector<Vec5f>>();
-    windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5(&sample_size_));
+    windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5());
     auto g = window_->Transform();
 
-    for(int x0= sample_size_[0]; x0< sample_size_[1]; ++x0)
-    for(int x1= sample_size_[2]; x1< sample_size_[3]; ++x1)
-    for(int x2= sample_size_[4]; x2< sample_size_[5]; ++x2)
-    for(int x3= sample_size_[6]; x3< sample_size_[7]; ++x3)
-    for(int x4= sample_size_[8]; x4< sample_size_[9]; ++x4){
+    for(int x0= sample_size_[0]; x0<= sample_size_[1]; ++x0)
+    for(int x1= sample_size_[2]; x1<= sample_size_[3]; ++x1)
+    for(int x2= sample_size_[4]; x2<= sample_size_[5]; ++x2)
+    for(int x3= sample_size_[6]; x3<= sample_size_[7]; ++x3)
+    for(int x4= sample_size_[8]; x4<= sample_size_[9]; ++x4){
         Vec5f v = g_ * Vec5f(x0,x1,x2,x3,x4);
         if(InsideWindow(Vec3(v[2], v[3], v[4]), g)){
             sample_->push_back(v);
@@ -200,9 +200,15 @@ void WindowedSample5::Add(const Vec5i &index) const
 auto WindowedSample5::AsBuffer() -> std::unique_ptr<std::vector<Vec10f>>
 {
     auto sample_with_neighbors = std::make_unique<std::vector<Vec10f>>();
-    for (const auto &v: *sample_)
+    for (auto &v: *sample_)
         sample_with_neighbors->emplace_back(Vec10f(v.first[0], v.first[1], v.first[2], v.first[3], v.first[4],
                                              v.second[0], v.second[1], v.second[2], v.second[3], v.second[4]));
+    LOG("Created Vec10f Buffer of {} elements", sample_with_neighbors->size());
+    for(const auto& [v,s] : *sample_){
+        auto w = Vec5i(v.head<5>());
+        LOG_DEBUG("Vector \n {}", w.transpose());
+    }
+
     return sample_with_neighbors;
 }
 }

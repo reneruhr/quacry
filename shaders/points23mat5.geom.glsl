@@ -34,13 +34,12 @@ vec4 Project(in vec4 v)
 
 void main()
 {
-    vec2 v = Apply_g_AndProject();
+    vert_color = vec4(0.3,0.8,0.2,1);
+    //vec2 v = Apply_g_AndProject();
+    vec2 v = gl_in[0].gl_Position.xy;
+    vec4 point = transform * vec4(v,0,1);
 
-    vec4 point = vec4(v,0,1);
     gl_Position =  pv * point;
-
-    vert_color = color;
-
     gl_PointSize = point_size;
     EmitVertex();
     EndPrimitive();

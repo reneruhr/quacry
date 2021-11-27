@@ -107,20 +107,19 @@ using Vec5i = Eigen::Matrix<int, 5, 1>;
 struct VecLess{
 bool operator()(const Vec5i& a, const Vec5i& b) const
 {
-    for(long i = 0; i<5; ++i)
+    for(long i = 0; i<5; ++i){
         if(a[i] > b[i]) return false;
         else if(a[i] < b[i]) return true;
+    }
     return false;
 }
 };
 
 class WindowedSample5{
     using Vec5Map = std::map<Vec5i, std::vector<int>, VecLess>;
-    SampleSize* sample_size_{};
     public:
     std::unique_ptr<Vec5Map> sample_;
-    WindowedSample5() = default;
-    explicit WindowedSample5(SampleSize* s) : sample_size_(s), sample_(std::make_unique<Vec5Map>()){}
+    explicit WindowedSample5() :  sample_(std::make_unique<Vec5Map>()){}
     void Add(const Vec5i& index) const;
     bool Has(const Vec5i& index) const;
     auto Neighbors(const Vec5i& index) const -> std::vector<int>;
