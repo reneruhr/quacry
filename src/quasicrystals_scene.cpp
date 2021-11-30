@@ -105,8 +105,8 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<float>("point_size");
 
     shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::mat4>("g11");
-    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::vec4>("g51");
-    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::vec4>("g15");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::vec4>("g5c");
+    shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<glm::vec4>("g5r");
     shaders_["Quasicrystal23 PointsMat5"]->AttachUniform<float>("g55");
 
     shaders_["Quasicrystal23 Edges"]->AttachUniform<glm::mat4>("pv");
@@ -117,8 +117,8 @@ void QuasiCrystalsScene::SetupShaders()
     shaders_["Quasicrystal23 Edges"]->AttachUniform<float>("point_size");
 
     shaders_["Quasicrystal23 Edges"]->AttachUniform<glm::mat4>("g11");
-    shaders_["Quasicrystal23 Edges"]->AttachUniform<glm::vec4>("g51");
-    shaders_["Quasicrystal23 Edges"]->AttachUniform<glm::vec4>("g15");
+    shaders_["Quasicrystal23 Edges"]->AttachUniform<glm::vec4>("g5c");
+    shaders_["Quasicrystal23 Edges"]->AttachUniform<glm::vec4>("g5r");
     shaders_["Quasicrystal23 Edges"]->AttachUniform<float>("g55");
 
     shaders_["Quasi Physical with Edges"]->AttachUniform<glm::mat4>("pv");
@@ -268,23 +268,25 @@ void QuasiCrystalsScene::SetUniformQuasicrystal23Edges(Projection *projection, Q
     shader->SetUniform<int>("Geometry", static_cast<int>(geometry));
     shader->SetUniform<float>("point_size", data->point_size_);
 
-    auto SplitMat5f= [quacry](Mat4& g11, Vec4& g51, Vec4& g15, float& g55)
+    auto SplitMat5f= [quacry](Mat4& g11, Vec4& g5r, Vec4& g5c, float& g55)
     {
         auto& g = quacry->GetBasis();
+        LOG_DEBUG("Apply SplitMat5f to g = \n {}", g);
         for(int i=0; i<4; i++) {
             for (int j = 0; j < 4; j++) g11[j][i] = g(i, j);
-            g51[i] = g(4,i);
-            g15[i] = g(i,4);
+            g5r[i] = g(4,i);
+            g5c[i] = g(i,4);
         }
         g55 = g(4,4);
+        LOG_DEBUG("Get g11= \n {}, \n g5c= {},\n g5r= {},\n g55= {}", g11,g5c,g5r,g55);
     };
 
-    Mat4 g11; Vec4 g15,g51; float g55;
-    SplitMat5f(g11,g51,g15,g55);
+    Mat4 g11; Vec4 g5r,g5c; float g55;
+    SplitMat5f(g11,g5r,g5c,g55);
 
     shader->SetUniform<glm::mat4>("g11",g11);
-    shader->SetUniform<glm::vec4>("g51",g51);
-    shader->SetUniform<glm::vec4>("g15",g15);
+    shader->SetUniform<glm::vec4>("g5c",g5c);
+    shader->SetUniform<glm::vec4>("g5r",g5r);
     shader->SetUniform<float>("g55",g55);
 }
 

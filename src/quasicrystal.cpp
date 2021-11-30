@@ -204,9 +204,11 @@ auto WindowedSample5::AsBuffer() -> std::unique_ptr<std::vector<Vec10f>>
         sample_with_neighbors->emplace_back(Vec10f(v.first[0], v.first[1], v.first[2], v.first[3], v.first[4],
                                              v.second[0], v.second[1], v.second[2], v.second[3], v.second[4]));
     LOG("Created Vec10f Buffer of {} elements", sample_with_neighbors->size());
-    for(const auto& [v,s] : *sample_){
-        auto w = Vec5i(v.head<5>());
+    for(const auto& v : *sample_with_neighbors){
+        auto w = Vec5f(v.head<5>());
+        auto t = Vec5f(v.tail<5>());
         LOG_DEBUG("Vector \n {}", w.transpose());
+        LOG_DEBUG("Neighbors \n {}", t.transpose());
     }
 
     return sample_with_neighbors;
