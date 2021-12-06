@@ -270,7 +270,7 @@ void QuasiCrystalsScene::SetUniformQuasicrystal23Edges(Projection *projection, Q
 
     auto SplitMat5f= [quacry](Mat4& g11, Vec4& g5r, Vec4& g5c, float& g55)
     {
-        auto& g = quacry->GetBasis();
+        auto& g = quacry->GetTransformedBasis();
         LOG_DEBUG("Apply SplitMat5f to g = \n {}", g);
         for(int i=0; i<4; i++) {
             for (int j = 0; j < 4; j++) g11[j][i] = g(i, j);

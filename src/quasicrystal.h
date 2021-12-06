@@ -54,7 +54,7 @@ class Quasicrystal23 :  public RenderObject, public Quasicrystal
 {
     Mat5f lattice_ = Mat5f::Identity();
     Mat5f transform_ = Mat5f::Identity();
-    Mat5f g_ = Mat5f::Identity();
+    Mat5f reduced_lattice_ = Mat5f::Identity();
     std::unique_ptr<Window3> window_temp_;
     Window3* window_{};
     SampleSize sample_size_ = { -5,5,  -5,5,  -5, 5, -5, 5, -2, 2 }; 
@@ -71,12 +71,16 @@ public:
     void Draw() override;
     void Draw(Geometry);
     void Draw(Space);
-    
+
+    void MultiplyLatticeAndLLL(const Mat5f& transform);
     void MakeSample();
     void Resample();
     void Relayout();
     bool InsideWindow(const Vec3 &v, const Mat4 &g);
     Mat5f& GetBasis() { return lattice_; };
+    Mat5f& GetTransform() { return transform_; };
+    Mat5f& GetTransformedBasis() { return reduced_lattice_; };
+    void ApplyLLL();
     std::unique_ptr<ViewData> view_data_= nullptr;
     Window3* GetWindow() { return window_; }
 

@@ -65,7 +65,7 @@ bool Quasicrystal23::InsideWindow(const Vec3 &v, const Mat4 &g)
 
 Quasicrystal23::Quasicrystal23(const std::string &name, const Mat5f &lattice, const Window3 &window,
                                SampleSize size_)
-: RenderObject(), Quasicrystal(name), lattice_(lattice), window_temp_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), g_(lattice), sample_size_(std::move(size_))
+: RenderObject(), Quasicrystal(name), lattice_(lattice), window_temp_(std::make_unique<Window3>(window)) , view_data_(std::make_unique<ViewData>()), reduced_lattice_(lattice), sample_size_(std::move(size_))
 {
     window_ = window_temp_.get();
     auto correct = TestIfCCWOriented(*window_);
@@ -86,13 +86,14 @@ void Quasicrystal23::MakeSample()
     sample_rejected_ = std::make_unique<std::vector<Vec5f>>();
     windowed_sample_ = std::make_unique<WindowedSample5>(WindowedSample5());
     auto g = window_->Transform();
+    auto basis = GetTransformedBasis();
 
     for(int x0= sample_size_[0]; x0<= sample_size_[1]; ++x0)
     for(int x1= sample_size_[2]; x1<= sample_size_[3]; ++x1)
     for(int x2= sample_size_[4]; x2<= sample_size_[5]; ++x2)
     for(int x3= sample_size_[6]; x3<= sample_size_[7]; ++x3)
     for(int x4= sample_size_[8]; x4<= sample_size_[9]; ++x4){
-        Vec5f v = g_ * Vec5f(x0,x1,x2,x3,x4);
+        Vec5f v = basis * Vec5f(x0,x1,x2,x3,x4);
         if(InsideWindow(Vec3(v[2], v[3], v[4]), g)){
             sample_->push_back(v);
             windowed_sample_->Add({x0,x1,x2,x3,x4});
@@ -169,6 +170,19 @@ void Quasicrystal23::Relayout()
     auto layout_rejected = new kipod::GLRenderLayout;
     layout_rejected->SetupPointSet23(sample_rejected_.get());
     ChangeLayout("Quasicrystal23 Rejected", std::move(*layout_rejected));
+}
+
+void Quasicrystal23::MultiplyLatticeAndLLL(const Mat5f &transform)
+{
+    transform_ =  transform;
+    ApplyLLL();
+}
+
+void Quasicrystal23::ApplyLLL()
+{
+    using namespace latred;
+    Mat5f reduced_lattice = transform_ * lattice_;
+    reduced_lattice_ = LLL(reduced_lattice);
 }
 
 //Encode Neighbors in a single Vec5i vector. x_i = {-1,0,1, 2="1"+"-1"}

@@ -152,8 +152,28 @@ void EmbeddingsView(std::array<int, 16> &selected){
             ImGui::PopStyleColor();
         }else ImGui::TextUnformatted("0");
         if ((i % 4) < 3) ImGui::SameLine();
-                ImGui::PopID();
-        }
+        ImGui::PopID();
+    }
+}
+
+void EmbeddingsView5(std::array<int, 16> &selected){
+    ImGui::Separator();
+    for (int i = 0; i < 4 * 4; i++){
+        ImGui::PushID(i);
+        if(selected[i]){
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.4f, 0.4f, 1.0f));
+            ImGui::TextUnformatted("x");
+            ImGui::PopStyleColor();
+        }else ImGui::TextUnformatted("0");
+        if ((i % 4) < 3) {
+            ImGui::SameLine();
+        }else ImGui::TextUnformatted("0");
+    }
+    for(int i =0; i<5; i++) {
+        ImGui::TextUnformatted("0");
+        ImGui::SameLine();
+    }
+    ImGui::PopID();
 }
 
 void DrawEmbeddings(std::array<int, 16> &selected, SL2Embedding &embedding)
@@ -176,8 +196,10 @@ void DrawEmbeddings(std::array<int, 16> &selected, SL2Embedding &embedding)
     EmbeddingMapReverse(selected, embedding);
 }
 
-void SL2Control(Mat4& current_transform, MatrixWalk &SL4walk, SL2Embedding embedding)
+bool SL2Control(Mat4& current_transform, MatrixWalk &SL4walk, SL2Embedding embedding)
 {
+    bool changed = false;
+
     static float dilate = 0;
     static float shearU = 0;
     static float shearL = 0;
@@ -199,6 +221,7 @@ void SL2Control(Mat4& current_transform, MatrixWalk &SL4walk, SL2Embedding embed
     ImGui::Checkbox("Immediate Mode", &immediate_mode);
     ImGui::SameLine();
     if(ImGui::Button("Reset")){
+        changed = true;
         shearU=0; dilate =0; shearL = 0; rotate1 =0; rotate2=0;
         local_five.Modify(0, std::make_tuple(ROTATE, embedding, rotate1));
         local_five.Modify(1, std::make_tuple(SHEAR_L, embedding, shearL));
@@ -211,43 +234,83 @@ void SL2Control(Mat4& current_transform, MatrixWalk &SL4walk, SL2Embedding embed
 
     ImGui::Columns(5, NULL, true);
     {
-        if(DrawSL2Matrix(rotate1, ROTATE) && immediate_mode)
+        if(DrawSL2Matrix(rotate1, ROTATE) && immediate_mode) {
             local_five.Modify(0, std::make_tuple(ROTATE, embedding, rotate1));
-        if(ImGui::Button("Add##Rotate1"))
+            changed = true;
+        }
+        if(ImGui::Button("Add##Rotate1")){
             SL4walk.Append(std::make_tuple(ROTATE, embedding, rotate1));
+            changed = true;
+        }
         ImGui::SameLine();
         if(ImGui::Button("0##Rotate1")) {
             rotate1=0;
             local_five.Modify(0, std::make_tuple(ROTATE, embedding, rotate1));
+            changed = true;
         }
         ImGui::NextColumn();
     }
     {
-        if(DrawSL2Matrix(shearL, SHEAR_L) && immediate_mode) local_five.Modify(1, std::make_tuple(SHEAR_L, embedding, shearL));
-        if(ImGui::Button("Add##ShearL"))		SL4walk.Append(std::make_tuple(SHEAR_L, embedding, shearL));
+        if(DrawSL2Matrix(shearL, SHEAR_L) && immediate_mode){
+            local_five.Modify(1, std::make_tuple(SHEAR_L, embedding, shearL));
+            changed = true;
+        }
+        if(ImGui::Button("Add##ShearL")){
+            SL4walk.Append(std::make_tuple(SHEAR_L, embedding, shearL));
+            changed = true;
+        }
         ImGui::SameLine();
-        if(ImGui::Button("0##ShearL1")) {shearL=0;	local_five.Modify(1, std::make_tuple(SHEAR_L, embedding, shearL));		}
+        if(ImGui::Button("0##ShearL1")) {
+            shearL=0;
+            local_five.Modify(1, std::make_tuple(SHEAR_L, embedding, shearL));
+            changed = true;
+        }
         ImGui::NextColumn();
     }
     {
-        if(DrawSL2Matrix(dilate, DILATE) && immediate_mode) local_five.Modify(2, std::make_tuple(DILATE, embedding, dilate));
-        if(ImGui::Button("Add##Dilate"))		SL4walk.Append(std::make_tuple(DILATE, embedding, dilate));
+        if(DrawSL2Matrix(dilate, DILATE) && immediate_mode)
+        {
+            changed = true;
+            local_five.Modify(2, std::make_tuple(DILATE, embedding, dilate));
+        }
+        if(ImGui::Button("Add##Dilate"))	{
+            SL4walk.Append(std::make_tuple(DILATE, embedding, dilate));
+            changed = true;
+        }
         ImGui::SameLine();
-        if(ImGui::Button("0##dilate")) {dilate=0;	           local_five.Modify(2, std::make_tuple(DILATE, embedding, dilate)); 	}
+        if(ImGui::Button("0##dilate")) {
+            changed = true;
+            dilate=0;	           local_five.Modify(2, std::make_tuple(DILATE, embedding, dilate)); 	}
         ImGui::NextColumn();
     }
     {
-        if(DrawSL2Matrix(shearU, SHEAR_U) && immediate_mode) local_five.Modify(3, std::make_tuple(SHEAR_U, embedding, shearU));
-        if(ImGui::Button("Add##ShearU"))		SL4walk.Append(std::make_tuple(SHEAR_U, embedding, shearU));
+        if(DrawSL2Matrix(shearU, SHEAR_U) && immediate_mode){
+            changed = true;
+            local_five.Modify(3, std::make_tuple(SHEAR_U, embedding, shearU));
+        }
+        if(ImGui::Button("Add##ShearU")){
+            changed = true;
+            SL4walk.Append(std::make_tuple(SHEAR_U, embedding, shearU));
+        }
         ImGui::SameLine();
-        if(ImGui::Button("0##shearU")) {shearU=0;	           local_five.Modify(3, std::make_tuple(SHEAR_U, embedding, shearU));	 	}
+        if(ImGui::Button("0##shearU")) {
+            changed = true;
+            shearU=0;	           local_five.Modify(3, std::make_tuple(SHEAR_U, embedding, shearU));	 	}
         ImGui::NextColumn();
     }
     {
-        if(DrawSL2Matrix(rotate2, ROTATE, 2) && immediate_mode) local_five.Modify(4, std::make_tuple(ROTATE, embedding, rotate2));
-        if(ImGui::Button("Add##Rotate2"))		SL4walk.Append(std::make_tuple(ROTATE, embedding, rotate2));
+        if(DrawSL2Matrix(rotate2, ROTATE, 2) && immediate_mode){
+            local_five.Modify(4, std::make_tuple(ROTATE, embedding, rotate2));
+            changed = true;
+        }
+        if(ImGui::Button("Add##Rotate2")){
+            SL4walk.Append(std::make_tuple(ROTATE, embedding, rotate2));
+            changed = true;
+        }
         ImGui::SameLine();
-        if(ImGui::Button("0##rotate2")) {rotate2=0;	  local_five.Modify(4, std::make_tuple(ROTATE, embedding, rotate2));        		}
+        if(ImGui::Button("0##rotate2")) {
+            changed = true;
+            rotate2=0;	  local_five.Modify(4, std::make_tuple(ROTATE, embedding, rotate2));        		}
         ImGui::NextColumn();
     }
     ImGui::Separator();
@@ -257,6 +320,7 @@ void SL2Control(Mat4& current_transform, MatrixWalk &SL4walk, SL2Embedding embed
         DrawColumnMatrix4(n);
         ImGui::NextColumn();
     }
+    return changed;
 }
 
 void MatrixWalkCandidate(MatrixWalk &SL4walk)
@@ -281,5 +345,13 @@ void SL4Control(MatrixWalk &SL4walk)
         }
     }
     ImGui::Columns(1);
+}
+
+auto Mat4ToEigen5(Mat4 in) -> Mat5f
+{
+    Eigen::Map<Eigen::Matrix4f> in_transformed(glm::value_ptr(in),4,4);
+    Mat5f out = Mat5f::Identity();
+    out.topLeftCorner<4,4>() = in_transformed;
+    return out;
 }
 

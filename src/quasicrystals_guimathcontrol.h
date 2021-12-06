@@ -36,11 +36,12 @@ enum mode {
 
 void EmbeddingMap(std::array<int, 16> &selected, SL2Embedding &currEmbedding);
 void EmbeddingMapReverse(std::array<int, 16> &selected, SL2Embedding &currEmbedding);
-void SL2Control(Mat4& current_transform, MatrixWalk &SL4walk, SL2Embedding currEmbedding);
+bool SL2Control(Mat4& current_transform, MatrixWalk &SL4walk, SL2Embedding currEmbedding);
 void SL4Control(MatrixWalk &SL4walk);
 bool DrawSL2Matrix(float& s, SL2Type sl2type, int id);
 void DrawEmbeddings(std::array<int, 16> &selected, SL2Embedding &currEmbedding);
 void EmbeddingsView(std::array<int, 16> &selected);
 void MatrixWalkCandidate(MatrixWalk&);
 
+auto Mat4ToEigen5(Mat4) -> Mat5f;
 

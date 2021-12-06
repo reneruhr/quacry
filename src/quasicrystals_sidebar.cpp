@@ -79,7 +79,10 @@ void QuasiCrystalsSidebar::LatticeControl()
         ImGui::Text("Basis:");
         DrawMatrix5(quacry->GetBasis());
         ImGui::Text("Current Transformation:");
-        DrawColumnMatrix4(quacry->Transform());
+        DrawMatrix5(quacry->GetTransform());
+        //DrawColumnMatrix4(quacry->Transform());
+        ImGui::Text("Current Transformed Basis:");
+        DrawMatrix5(quacry->GetTransformedBasis());
     }
     } //Lattice control
 }
