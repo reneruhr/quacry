@@ -167,13 +167,16 @@ void EmbeddingsView5(std::array<int, 16> &selected){
         }else ImGui::TextUnformatted("0");
         if ((i % 4) < 3) {
             ImGui::SameLine();
-        }else ImGui::TextUnformatted("0");
+        }else {
+            ImGui::SameLine();
+            ImGui::TextUnformatted("0");
+        }
+        ImGui::PopID();
     }
     for(int i =0; i<5; i++) {
         ImGui::TextUnformatted("0");
         ImGui::SameLine();
     }
-    ImGui::PopID();
 }
 
 void DrawEmbeddings(std::array<int, 16> &selected, SL2Embedding &embedding)

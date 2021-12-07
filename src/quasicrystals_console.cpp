@@ -50,7 +50,7 @@ void QuasiCrystalsConsole::SL2Action()
         ImGui::Columns(3, NULL, true);
         DrawEmbeddings(selectedEmbedding23, current_embedding23);
         ImGui::NextColumn();
-        EmbeddingsView(selectedEmbedding23);
+        EmbeddingsView5(selectedEmbedding23);
         ImGui::Columns(1);
 
         if(changed) {
@@ -59,9 +59,10 @@ void QuasiCrystalsConsole::SL2Action()
             scene->UpdateQuasicrystal();
         }
 
-        if (ImGui::TreeNode("Walk")) {
+        if (ImGui::TreeNode("Walk#5")) {
             MatrixWalkCandidate(SL4walk23);
             SL4Control(SL4walk23);
+            ImGui::TreePop();
         }
     }
 }
