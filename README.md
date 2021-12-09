@@ -2,8 +2,35 @@
 
 ## Features:
 
-- Visualization of Point sets and possible edges between them (defined from an LLL basis)
-- Ammann-Beenker QC with vertex star patterns. (See Baake-Grimm p275)
+Visualization of point sets and possible edges between them (defined from an LLL basis)
+
+Implemented examples:
+- Ammann-Beenker QC with vertex star patterns. [Runs on GPU] (See Baake-Grimm "Aperiodic Order" p275)
+- Penrose Pointset. [Runs on CPU] (See Marlof-Strömbergsson https://arxiv.org/pdf/1304.2044.pdf p9)
+
+## Demo
+
+
+
+
+https://user-images.githubusercontent.com/18703843/145476568-a29ea56b-4161-4550-a6f4-6a5492883caa.mov
+
+
+
+https://user-images.githubusercontent.com/18703843/145476580-eb4183ed-d2ed-4622-815e-6dd0f16d09ac.mov
+
+
+
+
+https://user-images.githubusercontent.com/18703843/145476589-92f754e3-7461-494b-b27a-0ab46bdb03ab.mov
+
+
+![Penrose Pointset ](demo_shots/penrose_points_small.jpg?raw=true)
+![Penrose Edges ](demo_shots/penrose_edges_small.jpg?raw=true)
+![Penrose Pointset Sheared](demo_shots/penrose_sheared_small.jpg?raw=true)
+
+
+
 
 ## Instructions for building from Source for Linux, Mac, Windows:
 
