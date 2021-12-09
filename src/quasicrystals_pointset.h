@@ -18,11 +18,11 @@ public:
     virtual void Init();
     virtual void Draw();
 
-    void UpdateSample(const SampleSize& sample);
+    void UpdateSample();
 protected:
     std::vector<Vector4> sample_;
-private:
     SampleSize sample_size_;
+private:
     std::vector<Vector4>* MakeSample();
 };
 }

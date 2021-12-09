@@ -26,6 +26,8 @@ struct Quasicrystal
     explicit Quasicrystal(std::string  name) : name_(std::move(name)){}
     std::string name_;
     virtual ~Quasicrystal()= default;
+    virtual SampleSize* GetSampleSize() { return nullptr; }
+    virtual void Resample() {};
 };
 
 class Quasicrystal22 : public Lattice<Basis4>, public PointSet4, public Quasicrystal
@@ -44,6 +46,9 @@ public:
 
     void ApplyLLL();
     Basis4 g_;
+
+    SampleSize*  GetSampleSize() override  { return &sample_size_; }
+    void Resample() override { UpdateSample(); };
 };
 
 enum class Space { Physical, Internal, Rejected };
@@ -74,7 +79,7 @@ public:
 
     void MultiplyLatticeAndLLL(const Mat5f& transform);
     void MakeSample();
-    void Resample();
+    void Resample() override;
     void Relayout();
     bool InsideWindow(const Vec3 &v, const Mat4 &g);
     Mat5f& GetBasis() { return lattice_; };
@@ -84,7 +89,8 @@ public:
     std::unique_ptr<ViewData> view_data_= nullptr;
     Window3* GetWindow() { return window_; }
 
-    //Todo Clean Up this Interface.
+    SampleSize*  GetSampleSize() override  { return &sample_size_; }
+
     std::unique_ptr<Window3> GiveUpWindow() { return std::move(window_temp_); }
     void UpdateWindowPointer(Window3* window) { window_ = window; };
 };

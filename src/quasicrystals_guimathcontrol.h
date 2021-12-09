@@ -19,6 +19,8 @@ typedef vector<Vec2> Vectors2;
 using Mat5f = Eigen::Matrix<float,5,5>;
 using Vec5f = Eigen::Matrix<float,5,1>;
 
+using SampleSize = std::vector< int >;
+
 void DrawColumnMatrix4(const Mat4& m);
 void DrawRowMatrix4(const Mat4& m);
 void DrawMatrix5(const Mat5f& m);
@@ -46,3 +48,4 @@ void MatrixWalkCandidate(MatrixWalk&);
 
 auto Mat4ToEigen5(Mat4) -> Mat5f;
 
+auto ChangeSampleSize(SampleSize& ) -> bool;

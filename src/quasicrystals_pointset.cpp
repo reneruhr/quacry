@@ -17,13 +17,13 @@ void PointSet4::Draw()
    RenderObject::Draw("PointSet");
 }
 
-void PointSet4::UpdateSample(const SampleSize& sample)
+void PointSet4::UpdateSample()
 {
-    sample_size_ = sample;
     sample_.clear();
     MakeSample();
-    unsigned long buffer_size = size(sample_) * sizeof(Vector4);
-    static_cast<kipod::GLRenderLayout*>(Layout())->vbo_->Add(0, buffer_size, (void*)sample_.data());
+    auto layout = new kipod::GLRenderLayout;
+    layout->SetupPointSet(&sample_);
+    ChangeLayout("PointSet", std::move(*layout));
 }
 
 std::vector<Vector4>* PointSet4::MakeSample()

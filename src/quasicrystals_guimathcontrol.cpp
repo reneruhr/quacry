@@ -358,3 +358,25 @@ auto Mat4ToEigen5(Mat4 in) -> Mat5f
     return out;
 }
 
+auto ChangeSampleSize(SampleSize& sample) -> bool
+{
+    bool changed = false;
+    ImGui::Text("Sample Size Bounds:");
+    static int max_bound = 50;
+    ImGui::SliderInt("Bound limit", &max_bound, 0,200);
+
+    ImGui::Text("[x-,x+]       [y-,y+]       [z-,z+]        [w-,w+]");
+    if(sample.size()==10) {
+        ImGui::SameLine();
+        ImGui::Text("    [u-,u+]");
+    }
+    for(int i = 0, e = sample.size(); i<e; ++i) {
+        std::string label = "##"+ std::to_string(i);
+        int min = ( (i%2) == 0 ) ? -max_bound : sample[i-1];
+        int max = ( (i%2) == 0 ) ? sample[i+1] : max_bound;
+        if (ImGui::VSliderInt(label.c_str(), ImVec2(18, 60), &sample[i], min, max)) changed = true;
+        if(i<e-1) ImGui::SameLine();
+    }
+    return changed;
+}
+
