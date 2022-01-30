@@ -43,7 +43,7 @@ Install necessary packages:
 
 ```console
 ~$ sudo apt install build-essential libgl1-mesa-dev cmake git 
-~$ sudo apt install libglfw3-dev glew-utils libglm-dev
+~$ sudo apt install libglfw3-dev glew-utils libglm-dev libglew-dev
 ```
 
 #### Step 2: 
